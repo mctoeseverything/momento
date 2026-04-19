@@ -102,23 +102,24 @@ export default function AdminPage() {
     })
   }
 
-  async function fetchSpaces() {
-    const { data } = await supabase
-      .from('spaces')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100)
-    if (!data) return
-    const withEmails = await Promise.all(data.map(async space => {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name')
-        .eq('id', space.owner_id)
-        .single()
-      return { ...space, owner_email: profile?.display_name || 'Unknown' }
-    }))
-    setSpaces(withEmails)
-  }
+ async function fetchSpaces() {
+  const { data } = await supabase
+    .from('spaces')
+    .select('*')
+    .eq('terminated', false)
+    .order('created_at', { ascending: false })
+    .limit(100)
+  if (!data) return
+  const withEmails = await Promise.all(data.map(async space => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', space.owner_id)
+      .single()
+    return { ...space, owner_email: profile?.display_name || 'Unknown' }
+  }))
+  setSpaces(withEmails)
+}
 
   async function fetchPhotos() {
     const { data } = await supabase

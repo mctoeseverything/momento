@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import styles from './album.module.css'
 
+
 type Album = {
   id: string
   name: string
@@ -54,6 +55,10 @@ export default function AlbumPage() {
   const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null)
 
   const lightbox = lightboxIndex !== null ? photos[lightboxIndex] : null
+  const [showReport, setShowReport] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reporting, setReporting] = useState(false)
+  const [reportSent, setReportSent] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -100,6 +105,24 @@ export default function AlbumPage() {
     )
     setPhotos(withUrls)
   }
+
+async function handleReport() {
+  if (!lightbox) return
+  setReporting(true)
+  await supabase.from('reports').insert({
+    photo_id: lightbox.id,
+    space_id: space?.id,
+    reported_by: user?.id || null,
+    reason: reportReason.trim() || 'No reason given',
+  })
+  setReporting(false)
+  setReportSent(true)
+  setTimeout(() => {
+    setShowReport(false)
+    setReportSent(false)
+    setReportReason('')
+  }, 2000)
+}
 
   function canUpload() {
     if (!space) return false
@@ -296,7 +319,7 @@ export default function AlbumPage() {
         </div>
       </div>
 
-      {lightbox && lightboxIndex !== null && (
+{lightbox && lightboxIndex !== null && (
         <div className={styles.lightboxOverlay} onClick={() => setLightboxIndex(null)}>
           <button className={styles.lightboxClose} onClick={() => setLightboxIndex(null)}>x</button>
 
@@ -328,7 +351,38 @@ export default function AlbumPage() {
                   {deletingPhoto === lightbox.id ? 'deleting...' : 'delete'}
                 </button>
               )}
+              <button
+                className={styles.reportBtn}
+                onClick={(e) => { e.stopPropagation(); setShowReport(true) }}
+              >
+                report
+              </button>
             </div>
+
+            {showReport && (
+              <div className={styles.reportModal} onClick={(e) => e.stopPropagation()}>
+                {reportSent ? (
+                  <div className={styles.reportSent}>✓ reported — we'll review it shortly</div>
+                ) : (
+                  <>
+                    <div className={styles.reportTitle}>report this photo</div>
+                    <textarea
+                      className={styles.reportInput}
+                      placeholder="why are you reporting this? (optional)"
+                      value={reportReason}
+                      onChange={e => setReportReason(e.target.value)}
+                      rows={3}
+                    />
+                    <div className={styles.reportBtns}>
+                      <button className={styles.reportCancelBtn} onClick={() => setShowReport(false)}>cancel</button>
+                      <button className={styles.reportSubmitBtn} onClick={handleReport} disabled={reporting}>
+                        {reporting ? 'sending...' : 'submit report'}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <button
@@ -340,7 +394,6 @@ export default function AlbumPage() {
           </button>
         </div>
       )}
-
       {showDeleteAlbum && (
         <div className={styles.modalOverlay} onClick={() => setShowDeleteAlbum(false)}>
           <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>

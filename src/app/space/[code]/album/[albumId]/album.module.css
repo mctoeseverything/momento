@@ -650,3 +650,94 @@
 .btnOutline:hover {
   border-color: #111111;
 }
+
+.reportBtn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.reportBtn:hover {
+  border-color: #cc0000;
+  color: #ff6666;
+}
+
+.reportModal {
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  padding: 1.2rem;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0.5rem;
+}
+
+.reportTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.8rem;
+}
+
+.reportInput {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: white;
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.8rem;
+  resize: none;
+  outline: none;
+  margin-bottom: 0.8rem;
+  box-sizing: border-box;
+}
+
+.reportInput::placeholder { color: rgba(255,255,255,0.3); }
+
+.reportBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reportCancelBtn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.reportSubmitBtn {
+  flex: 1;
+  background: #cc0000;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.reportSent {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #C8F025;
+  text-align: center;
+  padding: 0.5rem 0;
+}
