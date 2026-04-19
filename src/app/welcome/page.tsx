@@ -1,13 +1,14 @@
 'use client'
-export const dynamic = 'force-dynamic'
 
+export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import styles from './welcome.module.css'
+import { Suspense } from 'react'
 
-export default function WelcomePage() {
+function WelcomeContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [step, setStep] = useState<'loading' | 'onboard' | 'already'>('loading')
@@ -28,21 +29,14 @@ export default function WelcomePage() {
           token_hash: tokenHash,
           type: type as any,
         })
-        if (error || !data.user) {
-          router.push('/')
-          return
-        }
+        if (error || !data.user) { router.push('/'); return }
         setUser(data.user)
         const { data: profile } = await supabase
           .from('profiles')
           .select('onboarded')
           .eq('id', data.user.id)
           .single()
-        if (profile?.onboarded) {
-          setStep('already')
-        } else {
-          setStep('onboard')
-        }
+        if (profile?.onboarded) { setStep('already') } else { setStep('onboard') }
       } else {
         const { data } = await supabase.auth.getSession()
         if (!data.session?.user) { router.push('/'); return }
@@ -52,11 +46,7 @@ export default function WelcomePage() {
           .select('onboarded')
           .eq('id', data.session.user.id)
           .single()
-        if (profile?.onboarded) {
-          setStep('already')
-        } else {
-          setStep('onboard')
-        }
+        if (profile?.onboarded) { setStep('already') } else { setStep('onboard') }
       }
     }
     init()
@@ -101,7 +91,6 @@ export default function WelcomePage() {
   return (
     <div className={styles.centeredScreen}>
       <div className={styles.card}>
-
         <div className={styles.iconBox}>👋</div>
         <h1 className={styles.title}>welcome to momento</h1>
         <p className={styles.sub}>Just a couple things before we get started.</p>
@@ -148,8 +137,19 @@ export default function WelcomePage() {
         >
           {saving ? 'saving...' : "let's go →"}
         </button>
-
       </div>
     </div>
+  )
+}
+
+export default function WelcomePage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', background: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'white', fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.04em' }}>momento</div>
+      </div>
+    }>
+      <WelcomeContent />
+    </Suspense>
   )
 }
