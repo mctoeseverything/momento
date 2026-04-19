@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --lime: #C8F025;
+  --dark: #111111;
+  --gray-bg: #EBEBEA;
+  --white: #FFFFFF;
+  --muted: #666666;
+  --danger: #FF4136;
+}
+
+html, body {
+  background: var(--gray-bg);
+  color: var(--dark);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}

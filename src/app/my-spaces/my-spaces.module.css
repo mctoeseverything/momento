@@ -1,0 +1,239 @@
+.main {
+  min-height: 100vh;
+  background: #EBEBEA;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  background: #FFFFFF;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #111111;
+  letter-spacing: -0.04em;
+  cursor: pointer;
+}
+
+.body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+}
+
+.pageHeader {
+  margin-bottom: 3rem;
+}
+
+.pageTitle {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #111111;
+  line-height: 1.0;
+  margin-bottom: 0.4rem;
+}
+
+.pageSub {
+  font-size: 0.95rem;
+  color: #999999;
+  font-weight: 500;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #111111;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+}
+
+.sectionCount {
+  background: #111111;
+  color: #C8F025;
+  border-radius: 100px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.spacesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.spaceCard {
+  background: #FFFFFF;
+  border: 2px solid #111111;
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.spaceCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 4px 6px 0 #111111;
+}
+
+.spaceCardEmoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+  background: #C8F025;
+  border: 2px solid #111111;
+  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spaceCardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.spaceCardName {
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: #111111;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spaceCardDesc {
+  font-size: 0.82rem;
+  color: #999999;
+  margin-bottom: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spaceCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.codeChip {
+  background: #111111;
+  color: #C8F025;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-family: monospace;
+}
+
+.spaceCardDate {
+  font-size: 0.75rem;
+  color: #bbbbbb;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.emptyIcon { font-size: 2.5rem; }
+
+.emptyTitle {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #111111;
+}
+
+.emptySub {
+  font-size: 0.9rem;
+  color: #999999;
+  margin-bottom: 0.5rem;
+}
+
+.loadingDots {
+  display: flex;
+  gap: 0.5rem;
+  padding: 4rem;
+  justify-content: center;
+}
+
+.loadingDots span {
+  width: 8px;
+  height: 8px;
+  background: #111111;
+  border-radius: 50%;
+  animation: bounce 0.8s infinite;
+}
+
+.loadingDots span:nth-child(2) { animation-delay: 0.15s; }
+.loadingDots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+
+.btnLime {
+  background: #C8F025;
+  color: #111111;
+  border: 2px solid #111111;
+  padding: 0.6rem 1.4rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 2px 3px 0 #111111;
+  font-family: inherit;
+}
+
+.btnLime:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 5px 0 #111111;
+}
+
+.btnOutlineSmall {
+  background: transparent;
+  color: #111111;
+  border: 2px solid #d0d0d0;
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.btnOutlineSmall:hover { border-color: #111111; }
