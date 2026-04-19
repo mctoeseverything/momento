@@ -381,3 +381,41 @@
 .btnOutlineSmall:hover {
   border-color: var(--dark);
 }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2.5rem;
+  border-top: 1px solid #e0e0e0;
+  background: #FFFFFF;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footerLogo {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #111111;
+  letter-spacing: -0.04em;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footerLink {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #999999;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.footerLink:hover {
+  color: #111111;
+}

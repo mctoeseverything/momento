@@ -24,14 +24,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const emojis = ['🌅', '🎉', '💍', '🏖', '🎂', '🌿', '🎸', '🏔']
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) setMode(null)
-    })
-    return () => listener.subscription.unsubscribe()
-  }, [])
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
+  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null)
+    if (session?.user) {
+      supabase.from('profiles').select('onboarded').eq('id', session.user.id).single().then(({ data }) => {
+        if (!data?.onboarded) {
+          router.push('/welcome')
+        } else {
+          setMode(null)
+        }
+      })
+    }
+  })
+  return () => listener.subscription.unsubscribe()
+}, [])
 
   async function handleSendMagicLink() {
     if (!email.trim()) { setError('Please enter your email'); return }
@@ -271,6 +279,14 @@ export default function Home() {
           </div>
         </div>
       )}
+
+<footer className={styles.footer}>
+  <span className={styles.footerLogo}>momento</span>
+  <div className={styles.footerLinks}>
+    <button className={styles.footerLink} onClick={() => router.push('/terms')}>terms of service</button>
+    <button className={styles.footerLink} onClick={() => router.push('/privacy')}>privacy policy</button>
+  </div>
+</footer>
 
     </main>
   )
