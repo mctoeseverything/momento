@@ -136,10 +136,8 @@ useEffect(() => {
       }
       setUser(session.user)
       if (!profile?.onboarded) {
-        router.push('/welcome')
-      } else {
-        setMode(null)
-      }
+  router.push('/welcome')
+}
     } else {
       setUser(null)
     }
