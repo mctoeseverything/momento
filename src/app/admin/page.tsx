@@ -182,22 +182,22 @@ export default function AdminPage() {
     setWorking(false)
   }
 
-  async function handleDeleteSpace(spaceId: string) {
-    setWorking(true)
-    const { data: spacePhotos } = await supabase.from('photos').select('storage_path').eq('space_id', spaceId)
-    if (spacePhotos && spacePhotos.length > 0) {
-      await supabase.storage.from('photos').remove(spacePhotos.map(p => p.storage_path))
-    }
-    await supabase.from('photos').delete().eq('space_id', spaceId)
-    await supabase.from('albums').delete().eq('space_id', spaceId)
-    await supabase.from('space_members').delete().eq('space_id', spaceId)
-    await supabase.from('spaces').delete().eq('id', spaceId)
-    setSpaces(prev => prev.filter(s => s.id !== spaceId))
-    setStats(prev => ({ ...prev, spaces: prev.spaces - 1 }))
-    setConfirmDelete(null)
-    showToast('Space deleted.')
-    setWorking(false)
+async function handleDeleteSpace(spaceId: string) {
+  setWorking(true)
+  const { data: spacePhotos } = await supabase.from('photos').select('storage_path').eq('space_id', spaceId)
+  if (spacePhotos && spacePhotos.length > 0) {
+    await supabase.storage.from('photos').remove(spacePhotos.map(p => p.storage_path))
   }
+  await supabase.from('photos').delete().eq('space_id', spaceId)
+  await supabase.from('albums').delete().eq('space_id', spaceId)
+  await supabase.from('space_members').delete().eq('space_id', spaceId)
+  await supabase.from('spaces').update({ terminated: true }).eq('id', spaceId)
+  setSpaces(prev => prev.filter(s => s.id !== spaceId))
+  setStats(prev => ({ ...prev, spaces: prev.spaces - 1 }))
+  setConfirmDelete(null)
+  showToast('Space terminated.')
+  setWorking(false)
+}
 
   async function handleTerminateUser(userId: string) {
     setWorking(true)

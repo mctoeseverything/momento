@@ -16,6 +16,7 @@ type Space = {
   view_permission: string
   upload_permission: string
   album_permission: string
+  terminated: boolean
 }
 
 type Album = {
@@ -102,6 +103,7 @@ export default function SpacePage() {
   const [loadingMembers, setLoadingMembers] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [accessDenied, setAccessDenied] = useState(false)
+  const [terminated, setTerminated] = useState(false)
   const [showNewAlbum, setShowNewAlbum] = useState(false)
   const [newAlbum, setNewAlbum] = useState({ name: '', emoji: '📸' })
   const [creating, setCreating] = useState(false)
@@ -138,6 +140,8 @@ export default function SpacePage() {
       .single()
 
     if (!spaceData) { setNotFound(true); setLoading(false); return }
+
+    if (spaceData.terminated) { setTerminated(true); setLoading(false); return }
 
     const perm = spaceData.view_permission
     if (perm === 'code_and_auth' && !user) {
@@ -248,7 +252,21 @@ export default function SpacePage() {
         <div className={styles.notFoundIcon}>✦</div>
         <h1 className={styles.notFoundTitle}>Space not found</h1>
         <p className={styles.notFoundSub}>Double check the code and try again.</p>
-        <button className={styles.btnLime} onClick={() => router.push('/')}>← back to home</button>
+        <button className={styles.btnLime} onClick={() => router.push('/')}>back to home</button>
+      </div>
+    </div>
+  )
+
+  if (terminated) return (
+    <div className={styles.notFoundScreen}>
+      <div className={styles.notFoundCard}>
+        <div className={styles.notFoundIcon}>🚫</div>
+        <h1 className={styles.notFoundTitle}>space unavailable</h1>
+        <p className={styles.notFoundSub}>
+          This Space has been removed by Momento for violating our{' '}
+          <a href="/terms" style={{ color: '#111111', fontWeight: 700 }}>Terms of Service</a>.
+        </p>
+        <button className={styles.btnLime} onClick={() => router.push('/')}>back to home</button>
       </div>
     </div>
   )
@@ -258,7 +276,9 @@ export default function SpacePage() {
       <div className={styles.notFoundCard}>
         <div className={styles.notFoundIcon}>🔒</div>
         <h1 className={styles.notFoundTitle}>sign in to view</h1>
-        <p className={styles.notFoundSub}>This Space requires a Momento account. Sign in and come back with the code.</p>
+        <p className={styles.notFoundSub}>
+          This Space requires a Momento account. Sign in and come back with the code.
+        </p>
         <button className={styles.btnLime} onClick={() => router.push('/')}>sign in →</button>
       </div>
     </div>
@@ -276,7 +296,10 @@ export default function SpacePage() {
             <span className={styles.codeChipCopy}>{copied ? '✓ copied' : 'copy'}</span>
           </button>
           {user && (
-            <button className={styles.btnOutlineSmall} onClick={() => supabase.auth.signOut().then(() => router.push('/'))}>
+            <button
+              className={styles.btnOutlineSmall}
+              onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
+            >
               sign out
             </button>
           )}
@@ -385,7 +408,9 @@ export default function SpacePage() {
         <div className={styles.body}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>people</h2>
-            <span className={styles.memberCount}>{members.length} {members.length === 1 ? 'member' : 'members'}</span>
+            <span className={styles.memberCount}>
+              {members.length} {members.length === 1 ? 'member' : 'members'}
+            </span>
           </div>
           {loadingMembers ? (
             <p style={{ color: '#999' }}>loading...</p>
@@ -405,7 +430,9 @@ export default function SpacePage() {
                   <div className={styles.memberInfo}>
                     <div className={styles.memberEmail}>{member.email}</div>
                     <div className={styles.memberJoined}>
-                      joined {new Date(member.joined_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      joined {new Date(member.joined_at).toLocaleDateString('en-US', {
+                        month: 'long', day: 'numeric', year: 'numeric'
+                      })}
                     </div>
                   </div>
                   {member.user_id === space?.owner_id && (
@@ -444,7 +471,11 @@ export default function SpacePage() {
             />
             <div className={styles.settingsSaveRow}>
               {settingsSaved && <span className={styles.savedBadge}>✓ saved!</span>}
-              <button className={styles.btnLime} onClick={handleSaveSettings} disabled={savingSettings}>
+              <button
+                className={styles.btnLime}
+                onClick={handleSaveSettings}
+                disabled={savingSettings}
+              >
                 {savingSettings ? 'saving...' : 'save settings →'}
               </button>
             </div>

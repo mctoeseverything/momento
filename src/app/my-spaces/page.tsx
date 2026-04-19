@@ -1,6 +1,5 @@
 'use client'
 export const dynamic = 'force-dynamic'
-
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -33,12 +32,12 @@ export default function MySpacesPage() {
   async function fetchSpaces(userId: string) {
     setLoading(true)
 
-    // Spaces you own
-    const { data: owned } = await supabase
-      .from('spaces')
-      .select('*')
-      .eq('owner_id', userId)
-      .order('created_at', { ascending: false })
+const { data: owned } = await supabase
+  .from('spaces')
+  .select('*')
+  .eq('owner_id', userId)
+  .eq('terminated', false)
+  .order('created_at', { ascending: false })
 
     setSpaces(owned || [])
 
@@ -50,12 +49,13 @@ export default function MySpacesPage() {
 
     if (memberRows && memberRows.length > 0) {
       const ids = memberRows.map(r => r.space_id)
-      const { data: joined } = await supabase
-        .from('spaces')
-        .select('*')
-        .in('id', ids)
-        .neq('owner_id', userId)
-        .order('created_at', { ascending: false })
+    const { data: joined } = await supabase
+  .from('spaces')
+  .select('*')
+  .in('id', ids)
+  .neq('owner_id', userId)
+  .eq('terminated', false)
+  .order('created_at', { ascending: false })
       setJoinedSpaces(joined || [])
     }
 
