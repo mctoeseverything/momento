@@ -29,38 +29,39 @@ export default function MySpacesPage() {
     })
   }, [])
 
-  async function fetchSpaces(userId: string) {
-    setLoading(true)
+async function fetchSpaces(userId: string) {
+  setLoading(true)
 
-const { data: owned } = await supabase
-  .from('spaces')
-  .select('*')
-  .eq('owner_id', userId)
-  .eq('terminated', false)
-  .order('created_at', { ascending: false })
+  const { data: owned } = await supabase
+    .from('spaces')
+    .select('*')
+    .eq('owner_id', userId)
+    .eq('terminated', false)
+    .order('created_at', { ascending: false })
 
-    setSpaces(owned || [])
+  setSpaces(owned || [])
 
-    // Spaces you joined
-    const { data: memberRows } = await supabase
-      .from('space_members')
-      .select('space_id')
-      .eq('user_id', userId)
+  const { data: memberRows } = await supabase
+    .from('space_members')
+    .select('space_id')
+    .eq('user_id', userId)
 
-    if (memberRows && memberRows.length > 0) {
-      const ids = memberRows.map(r => r.space_id)
+  if (memberRows && memberRows.length > 0) {
+    const ids = memberRows.map(r => r.space_id)
     const { data: joined } = await supabase
-  .from('spaces')
-  .select('*')
-  .in('id', ids)
-  .neq('owner_id', userId)
-  .eq('terminated', false)
-  .order('created_at', { ascending: false })
-      setJoinedSpaces(joined || [])
-    }
-
-    setLoading(false)
+      .from('spaces')
+      .select('*')
+      .in('id', ids)
+      .neq('owner_id', userId)
+      .eq('terminated', false)
+      .order('created_at', { ascending: false })
+    setJoinedSpaces(joined || [])
+  } else {
+    setJoinedSpaces([])
   }
+
+  setLoading(false)
+}
 
   return (
     <main className={styles.main}>

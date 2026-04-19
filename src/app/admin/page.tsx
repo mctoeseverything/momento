@@ -196,6 +196,7 @@ async function handleDeleteSpace(spaceId: string) {
   setStats(prev => ({ ...prev, spaces: prev.spaces - 1 }))
   setConfirmDelete(null)
   showToast('Space terminated.')
+  router.refresh()
   setWorking(false)
 }
 
