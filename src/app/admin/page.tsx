@@ -201,21 +201,33 @@ async function handleDeleteSpace(spaceId: string) {
   setWorking(false)
 }
 
-  async function handleTerminateUser(userId: string) {
-    setWorking(true)
-    const { data: userSpaces } = await supabase.from('spaces').select('id').eq('owner_id', userId)
-    if (userSpaces) {
-      for (const space of userSpaces) {
-        await handleDeleteSpace(space.id)
-      }
+ async function handleTerminateUser(userId: string) {
+  setWorking(true)
+
+  const { data: userSpaces } = await supabase
+    .from('spaces')
+    .select('id')
+    .eq('owner_id', userId)
+
+  if (userSpaces) {
+    for (const space of userSpaces) {
+      await handleDeleteSpace(space.id)
     }
-    await supabase.from('space_members').delete().eq('user_id', userId)
-    await supabase.from('profiles').delete().eq('id', userId)
-    setUsers(prev => prev.filter(u => u.id !== userId))
-    setConfirmTerminate(null)
-    showToast('Account terminated.')
-    setWorking(false)
   }
+
+  await supabase.from('space_members').delete().eq('user_id', userId)
+
+  // Mark as restricted — keeps the profile so we can block them on login
+  await supabase.from('profiles').upsert({
+    id: userId,
+    restricted: true,
+  })
+
+  setUsers(prev => prev.filter(u => u.id !== userId))
+  setConfirmTerminate(null)
+  showToast('Account terminated.')
+  setWorking(false)
+}
 
   async function handleResolveReport(reportId: string) {
     await supabase.from('reports').update({ resolved: true }).eq('id', reportId)

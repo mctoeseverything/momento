@@ -120,12 +120,32 @@ export default function SpacePage() {
   const [settingsSaved, setSettingsSaved] = useState(false)
   const albumEmojis = ['📸', '🌅', '🎉', '💃', '🍕', '🥂', '🎶', '😂', '🌿', '✨']
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null)
-      setAuthReady(true)
-    })
-  }, [])
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
+  const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (session?.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarded, restricted')
+        .eq('id', session.user.id)
+        .single()
+      if (profile?.restricted) {
+        await supabase.auth.signOut()
+        router.push('/restricted')
+        return
+      }
+      setUser(session.user)
+      if (!profile?.onboarded) {
+        router.push('/welcome')
+      } else {
+        setMode(null)
+      }
+    } else {
+      setUser(null)
+    }
+  })
+  return () => listener.subscription.unsubscribe()
+}, [])
 
   useEffect(() => {
     if (authReady && code) fetchSpace()

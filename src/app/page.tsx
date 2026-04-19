@@ -24,29 +24,52 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const emojis = ['🌅', '🎉', '💍', '🏖', '🎂', '🌿', '🎸', '🏔']
 
-useEffect(() => {
-  supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
-  const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-    setUser(session?.user ?? null)
-    if (session?.user) {
-      supabase.from('profiles').select('onboarded').eq('id', session.user.id).single().then(({ data }) => {
-        if (!data?.onboarded) {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
+
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarded, restricted')
+          .eq('id', session.user.id)
+          .single()
+
+        if (profile?.restricted) {
+          await supabase.auth.signOut()
+          router.push('/restricted')
+          return
+        }
+
+        setUser(session.user)
+
+        if (!profile?.onboarded) {
           router.push('/welcome')
         } else {
           setMode(null)
         }
-      })
-    }
-  })
-  return () => listener.subscription.unsubscribe()
-}, [])
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => listener.subscription.unsubscribe()
+  }, [])
 
   async function handleSendMagicLink() {
     if (!email.trim()) { setError('Please enter your email'); return }
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.signInWithOtp({ email: email.trim() })
-    if (error) { setError('Something went wrong. Try again.'); setLoading(false); return }
+    if (error) {
+      if (error.message.includes('rate limit') || error.status === 429) {
+        setError('Too many attempts — please wait a few minutes and try again.')
+      } else {
+        setError(error.message || 'Something went wrong. Try again.')
+      }
+      setLoading(false)
+      return
+    }
     setAuthStep('sent')
     setLoading(false)
   }
@@ -57,24 +80,24 @@ useEffect(() => {
   }
 
   async function handleCreate() {
-  if (!form.name.trim()) { setError('Please enter a space name'); return }
-  setLoading(true)
-  setError('')
-  const code = generateCode()
-  const { data: { session } } = await supabase.auth.getSession()
-  const { error } = await supabase.from('spaces').insert({
-    name: form.name.trim(),
-    description: form.description.trim(),
-    emoji: form.emoji,
-    code,
-    owner_id: session?.user?.id,
-    view_permission: 'code_and_auth',
-    upload_permission: 'code_and_auth',
-    album_permission: 'code_and_auth',
-  })
-  if (error) { setError('Something went wrong. Try again.'); setLoading(false); return }
-  router.push(`/space/${code}`)
-}
+    if (!form.name.trim()) { setError('Please enter a space name'); return }
+    setLoading(true)
+    setError('')
+    const code = generateCode()
+    const { data: { session } } = await supabase.auth.getSession()
+    const { error } = await supabase.from('spaces').insert({
+      name: form.name.trim(),
+      description: form.description.trim(),
+      emoji: form.emoji,
+      code,
+      owner_id: session?.user?.id,
+      view_permission: 'code_and_auth',
+      upload_permission: 'code_and_auth',
+      album_permission: 'code_and_auth',
+    })
+    if (error) { setError('Something went wrong. Try again.'); setLoading(false); return }
+    router.push('/space/' + code)
+  }
 
   async function handleJoin() {
     if (!joinCode.trim()) { setError('Please enter a code'); return }
@@ -86,7 +109,7 @@ useEffect(() => {
       .eq('code', joinCode.trim().toUpperCase())
       .single()
     if (!data) { setError('Space not found. Check the code and try again.'); setLoading(false); return }
-    router.push(`/space/${data.code}`)
+    router.push('/space/' + data.code)
   }
 
   function openCreate() {
@@ -97,29 +120,28 @@ useEffect(() => {
   return (
     <main className={styles.main}>
 
-<nav className={styles.nav}>
-  <div className={styles.logo}>momento</div>
-  <div className={styles.navLinks}>
-    <button className={styles.navLinkBtn} onClick={() => { setMode('join'); setError('') }}>
-      join a space
-    </button>
-    {user ? (
-      <>
-        <button className={styles.navLinkBtn} onClick={() => router.push('/my-spaces')}>
-          my spaces
-        </button>
-        <span className={styles.navEmail}>{user.email}</span>
-        <button className={styles.btnOutlineSmall} onClick={handleSignOut}>sign out</button>
-      </>
-    ) : (
-      <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
-        sign in
-      </button>
-    )}
-  </div>
-</nav>
+      <nav className={styles.nav}>
+        <div className={styles.logo}>momento</div>
+        <div className={styles.navLinks}>
+          <button className={styles.navLinkBtn} onClick={() => { setMode('join'); setError('') }}>
+            join a space
+          </button>
+          {user ? (
+            <>
+              <button className={styles.navLinkBtn} onClick={() => router.push('/my-spaces')}>
+                my spaces
+              </button>
+              <span className={styles.navEmail}>{user.email}</span>
+              <button className={styles.btnOutlineSmall} onClick={handleSignOut}>sign out</button>
+            </>
+          ) : (
+            <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
+              sign in
+            </button>
+          )}
+        </div>
+      </nav>
 
-      {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <h1 className={styles.heroTitle}>
@@ -141,7 +163,6 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* Features */}
       <section className={styles.features}>
         <div className={styles.featureGrid}>
           <div className={styles.featureCard}>
@@ -167,13 +188,11 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* MODALS */}
       {mode && (
         <div className={styles.modalOverlay} onClick={() => setMode(null)}>
           <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
             <button className={styles.modalClose} onClick={() => setMode(null)}>✕</button>
 
-            {/* Auth Modal */}
             {mode === 'auth' && authStep === 'email' && (
               <>
                 <h2 className={styles.formTitle}>sign in to momento</h2>
@@ -202,14 +221,15 @@ useEffect(() => {
               <>
                 <div className={styles.sentIcon}>✦</div>
                 <h2 className={styles.formTitle}>check your email</h2>
-                <p className={styles.formSub}>We sent a magic link to <strong>{email}</strong>. Click it to sign in — then come back here.</p>
+                <p className={styles.formSub}>
+                  We sent a magic link to <strong>{email}</strong>. Click it to sign in — then come back here.
+                </p>
                 <button className={styles.btnLime} style={{ width: '100%' }} onClick={() => setMode(null)}>
                   got it
                 </button>
               </>
             )}
 
-            {/* Create Modal */}
             {mode === 'create' && (
               <>
                 <h2 className={styles.formTitle}>create a space</h2>
@@ -251,7 +271,6 @@ useEffect(() => {
               </>
             )}
 
-            {/* Join Modal */}
             {mode === 'join' && (
               <>
                 <h2 className={styles.formTitle}>join a space</h2>
@@ -280,13 +299,13 @@ useEffect(() => {
         </div>
       )}
 
-<footer className={styles.footer}>
-  <span className={styles.footerLogo}>momento</span>
-  <div className={styles.footerLinks}>
-    <button className={styles.footerLink} onClick={() => router.push('/terms')}>terms of service</button>
-    <button className={styles.footerLink} onClick={() => router.push('/privacy')}>privacy policy</button>
-  </div>
-</footer>
+      <footer className={styles.footer}>
+        <span className={styles.footerLogo}>momento</span>
+        <div className={styles.footerLinks}>
+          <button className={styles.footerLink} onClick={() => router.push('/terms')}>terms of service</button>
+          <button className={styles.footerLink} onClick={() => router.push('/privacy')}>privacy policy</button>
+        </div>
+      </footer>
 
     </main>
   )

@@ -2,11 +2,10 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import styles from './welcome.module.css'
-import { Suspense } from 'react'
 
 function WelcomeContent() {
   const router = useRouter()
@@ -30,22 +29,39 @@ function WelcomeContent() {
           type: type as any,
         })
         if (error || !data.user) { router.push('/'); return }
-        setUser(data.user)
+
         const { data: profile } = await supabase
           .from('profiles')
-          .select('onboarded')
+          .select('onboarded, restricted')
           .eq('id', data.user.id)
           .single()
+
+        if (profile?.restricted) {
+          await supabase.auth.signOut()
+          router.push('/restricted')
+          return
+        }
+
+        setUser(data.user)
         if (profile?.onboarded) { setStep('already') } else { setStep('onboard') }
+
       } else {
         const { data } = await supabase.auth.getSession()
         if (!data.session?.user) { router.push('/'); return }
-        setUser(data.session.user)
+
         const { data: profile } = await supabase
           .from('profiles')
-          .select('onboarded')
+          .select('onboarded, restricted')
           .eq('id', data.session.user.id)
           .single()
+
+        if (profile?.restricted) {
+          await supabase.auth.signOut()
+          router.push('/restricted')
+          return
+        }
+
+        setUser(data.session.user)
         if (profile?.onboarded) { setStep('already') } else { setStep('onboard') }
       }
     }
