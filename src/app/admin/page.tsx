@@ -33,10 +33,29 @@ type Photo = {
 type Report = {
   id: string
   photo_id: string
+  space_id: string
   reason: string
   resolved: boolean
   created_at: string
-  photo?: Photo
+  reported_by: string
+  reporter_email?: string
+  photo?: {
+    id: string
+    storage_path: string
+    uploaded_by: string
+    file_type: string
+    album_id: string
+    space_id: string
+    url?: string
+  } | null
+  space?: {
+    name: string
+    code: string
+  } | null
+  album?: {
+    id: string
+    name: string
+  } | null
 }
 
 type UserProfile = {
@@ -66,6 +85,7 @@ export default function AdminPage() {
   const [confirmTerminate, setConfirmTerminate] = useState<UserProfile | null>(null)
   const [working, setWorking] = useState(false)
   const [toast, setToast] = useState('')
+  const [reportMoreInfo, setReportMoreInfo] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -144,14 +164,67 @@ export default function AdminPage() {
     setUsers(data || [])
   }
 
-  async function fetchReports() {
-    const { data } = await supabase
-      .from('reports')
-      .select('*')
-      .eq('resolved', false)
-      .order('created_at', { ascending: false })
-    setReports(data || [])
-  }
+async function fetchReports() {
+  const { data } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('resolved', false)
+    .order('created_at', { ascending: false })
+
+  if (!data) { setReports([]); return }
+
+  const enriched = await Promise.all(data.map(async report => {
+    // Get photo
+    let photoWithUrl = null
+    if (report.photo_id) {
+      const { data: photo } = await supabase
+        .from('photos')
+        .select('*')
+        .eq('id', report.photo_id)
+        .single()
+      if (photo) {
+        const { data: urlData } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.storage_path)
+        photoWithUrl = { ...photo, url: urlData.publicUrl }
+      }
+    }
+
+    // Get space
+    let space = null
+    if (report.space_id) {
+      const { data: spaceData } = await supabase
+        .from('spaces')
+        .select('name, code')
+        .eq('id', report.space_id)
+        .single()
+      space = spaceData
+    }
+
+    // Get album
+    let album = null
+    if (photoWithUrl?.album_id) {
+      const { data: albumData } = await supabase
+        .from('albums')
+        .select('id, name')
+        .eq('id', photoWithUrl.album_id)
+        .single()
+      album = albumData
+    }
+
+    // Get reporter email
+    let reporter_email = 'Anonymous'
+    if (report.reported_by) {
+      const { data: emailData } = await supabase
+        .rpc('get_user_email', { user_id: report.reported_by })
+      if (emailData) reporter_email = emailData
+    }
+
+    return { ...report, photo: photoWithUrl, space, album, reporter_email }
+  }))
+
+  setReports(enriched)
+}
 
   function showToast(msg: string) {
     setToast(msg)
@@ -401,33 +474,152 @@ async function handleDeleteSpace(spaceId: string) {
           </div>
         )}
 
-        {tab === 'reports' && (
-          <div>
-            <h1 className={styles.pageTitle}>reports</h1>
-            {reports.length === 0 ? (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>✦</div>
-                <h3 className={styles.emptyTitle}>no open reports</h3>
-                <p className={styles.emptySub}>You're all caught up!</p>
+   {tab === 'reports' && (
+  <div>
+    <h1 className={styles.pageTitle}>reports</h1>
+    {reports.length === 0 ? (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>✦</div>
+        <h3 className={styles.emptyTitle}>no open reports</h3>
+        <p className={styles.emptySub}>You're all caught up!</p>
+      </div>
+    ) : (
+      <div className={styles.reportsList}>
+        {reports.map(report => (
+          <div key={report.id} className={styles.reportCard}>
+
+            <div className={styles.reportPhotoWrap}>
+              {report.photo ? (
+                report.photo.file_type?.startsWith('video/') ? (
+                  <video src={report.photo.url} className={styles.reportPhoto} muted />
+                ) : (
+                  <img src={report.photo.url} alt="" className={styles.reportPhoto} />
+                )
+              ) : (
+                <div className={styles.reportPhotoMissing}>deleted</div>
+              )}
+            </div>
+
+            <div className={styles.reportInfo}>
+              <div className={styles.reportReason}>
+                {report.reason || 'No reason given'}
               </div>
-            ) : (
-              <div className={styles.reportsList}>
-                {reports.map(report => (
-                  <div key={report.id} className={styles.reportCard}>
-                    <div className={styles.reportInfo}>
-                      <div className={styles.reportReason}>{report.reason || 'No reason given'}</div>
-                      <div className={styles.reportMeta}>reported {new Date(report.created_at).toLocaleDateString()}</div>
-                    </div>
-                    <div className={styles.actionBtns}>
-                      <button className={styles.btnView} onClick={() => handleResolveReport(report.id)}>resolve</button>
-                      <button className={styles.btnDelete} onClick={() => setConfirmDelete({ type: 'photo', id: report.photo_id, name: 'reported photo' })}>delete photo</button>
-                    </div>
-                  </div>
-                ))}
+              <div className={styles.reportMetaRow}>
+                <span className={styles.reportMetaItem}>
+                  reported by <strong>{report.reporter_email}</strong>
+                </span>
               </div>
-            )}
+              <div className={styles.reportMetaRow}>
+                <span className={styles.reportMetaItem}>
+                  {new Date(report.created_at).toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                  })}
+                </span>
+              </div>
+              {report.space && (
+                <div className={styles.reportMetaRow}>
+                  <span className={styles.reportMetaItem}>
+                    space: <strong>{report.space.name}</strong>
+                  </span>
+                  {report.album && (
+                    <>
+                      <span className={styles.reportMetaDot}>·</span>
+                      <span className={styles.reportMetaItem}>
+                        album: <strong>{report.album.name}</strong>
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+              {report.photo && (
+                <div className={styles.reportMetaRow}>
+                  <span className={styles.reportMetaItem}>
+                    uploaded by <strong>{report.photo.uploaded_by}</strong>
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.reportActions}>
+              <div className={styles.reportActionsTop}>
+                <button
+                  className={styles.btnView}
+                  onClick={() => handleResolveReport(report.id)}
+                >
+                  resolve
+                </button>
+                {report.photo && (
+                  <button
+                    className={styles.btnDelete}
+                    onClick={() => setConfirmDelete({
+                      type: 'photo',
+                      id: report.photo!.id,
+                      name: 'reported photo'
+                    })}
+                  >
+                    delete
+                  </button>
+                )}
+                <div className={styles.moreInfoWrap}>
+                  <button
+                    className={styles.moreInfoBtn}
+                    onClick={() => setReportMoreInfo(
+                      reportMoreInfo === report.id ? null : report.id
+                    )}
+                  >
+                    •••
+                  </button>
+                  {reportMoreInfo === report.id && (
+                    <div className={styles.moreInfoPopup}>
+                      {report.space && (
+                        <button
+                          className={styles.moreInfoItem}
+                          onClick={() => {
+                            setReportMoreInfo(null)
+                            router.push('/space/' + report.space!.code)
+                          }}
+                        >
+                          go to space →
+                        </button>
+                      )}
+                      {report.space && report.album && (
+                        <button
+                          className={styles.moreInfoItem}
+                          onClick={() => {
+                            setReportMoreInfo(null)
+                            router.push('/space/' + report.space!.code + '/album/' + report.album!.id)
+                          }}
+                        >
+                          go to album →
+                        </button>
+                      )}
+                      {report.photo?.uploaded_by && (
+                        <button
+                          className={styles.moreInfoItem}
+                          onClick={() => {
+                            const u = users.find(u =>
+                              u.email === report.photo?.uploaded_by ||
+                              u.display_name === report.photo?.uploaded_by
+                            )
+                            if (u) setConfirmTerminate(u)
+                            setReportMoreInfo(null)
+                          }}
+                        >
+                          terminate uploader →
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
           </div>
-        )}
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
       </div>
 
