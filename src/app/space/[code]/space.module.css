@@ -805,3 +805,113 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* ANNOUNCEMENTS */
+.announcementsBlock {
+  margin-bottom: 2rem;
+  background: #FFFFFF;
+  border: 2px solid #111111;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 3px 4px 0 #111111;
+}
+
+.announcementsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.announcementsTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 900;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #111111;
+}
+
+.announcementsIcon {
+  font-size: 1rem;
+}
+
+.announcementsEmpty {
+  font-size: 0.85rem;
+  color: #999999;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.announcementsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.announcementCard {
+  background: #EBEBEA;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  border-left: 4px solid #C8F025;
+}
+
+.announcementMessage {
+  font-size: 0.95rem;
+  color: #111111;
+  line-height: 1.6;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+}
+
+.announcementFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.announcementDate {
+  font-size: 0.75rem;
+  color: #999999;
+  font-weight: 500;
+}
+
+.announcementDelete {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cc0000;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: opacity 0.15s;
+}
+
+.announcementDelete:hover {
+  opacity: 0.7;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #EBEBEA;
+  color: #111111;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  border-color: #111111;
+  background: #FFFFFF;
+}

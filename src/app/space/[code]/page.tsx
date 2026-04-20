@@ -33,6 +33,12 @@ type Member = {
   joined_at: string
 }
 
+type Announcement = {
+  id: string
+  message: string
+  created_at: string
+}
+
 type Tab = 'albums' | 'members' | 'settings'
 
 const VIEW_OPTIONS = [
@@ -99,14 +105,18 @@ export default function SpacePage() {
   const [space, setSpace] = useState<Space | null>(null)
   const [albums, setAlbums] = useState<Album[]>([])
   const [members, setMembers] = useState<Member[]>([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMembers, setLoadingMembers] = useState(false)
   const [notFound, setNotFound] = useState(false)
   const [accessDenied, setAccessDenied] = useState(false)
   const [terminated, setTerminated] = useState(false)
   const [showNewAlbum, setShowNewAlbum] = useState(false)
+  const [showNewAnnouncement, setShowNewAnnouncement] = useState(false)
   const [newAlbum, setNewAlbum] = useState({ name: '', emoji: '📸' })
+  const [newMessage, setNewMessage] = useState('')
   const [creating, setCreating] = useState(false)
+  const [postingAnnouncement, setPostingAnnouncement] = useState(false)
   const [copied, setCopied] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [authReady, setAuthReady] = useState(false)
@@ -120,25 +130,25 @@ export default function SpacePage() {
   const [settingsSaved, setSettingsSaved] = useState(false)
   const albumEmojis = ['📸', '🌅', '🎉', '💃', '🍕', '🥂', '🎶', '😂', '🌿', '✨']
 
-useEffect(() => {
-  supabase.auth.getSession().then(async ({ data }) => {
-    const sessionUser = data.session?.user ?? null
-    if (sessionUser) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('restricted')
-        .eq('id', sessionUser.id)
-        .single()
-      if (profile?.restricted) {
-        await supabase.auth.signOut()
-        router.push('/restricted')
-        return
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data }) => {
+      const sessionUser = data.session?.user ?? null
+      if (sessionUser) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('restricted')
+          .eq('id', sessionUser.id)
+          .single()
+        if (profile?.restricted) {
+          await supabase.auth.signOut()
+          router.push('/restricted')
+          return
+        }
       }
-    }
-    setUser(sessionUser)
-    setAuthReady(true)
-  })
-}, [])
+      setUser(sessionUser)
+      setAuthReady(true)
+    })
+  }, [])
 
   useEffect(() => {
     if (authReady && code) fetchSpace()
@@ -153,7 +163,6 @@ useEffect(() => {
       .single()
 
     if (!spaceData) { setNotFound(true); setLoading(false); return }
-
     if (spaceData.terminated) { setTerminated(true); setLoading(false); return }
 
     const perm = spaceData.view_permission
@@ -178,6 +187,7 @@ useEffect(() => {
 
     await fetchAlbums(spaceData.id)
     await fetchMembers(spaceData.id)
+    await fetchAnnouncements(spaceData.id)
     setLoading(false)
   }
 
@@ -201,6 +211,15 @@ useEffect(() => {
     setLoadingMembers(false)
   }
 
+  async function fetchAnnouncements(spaceId: string) {
+    const { data } = await supabase
+      .from('announcements')
+      .select('*')
+      .eq('space_id', spaceId)
+      .order('created_at', { ascending: false })
+    setAnnouncements(data || [])
+  }
+
   async function handleCreateAlbum() {
     if (!newAlbum.name.trim() || !space) return
     if (space.album_permission === 'owner_only' && user?.id !== space.owner_id) return
@@ -217,6 +236,24 @@ useEffect(() => {
       setShowNewAlbum(false)
     }
     setCreating(false)
+  }
+
+  async function handlePostAnnouncement() {
+    if (!newMessage.trim() || !space) return
+    setPostingAnnouncement(true)
+    await supabase.from('announcements').insert({
+      space_id: space.id,
+      message: newMessage.trim(),
+    })
+    await fetchAnnouncements(space.id)
+    setNewMessage('')
+    setShowNewAnnouncement(false)
+    setPostingAnnouncement(false)
+  }
+
+  async function handleDeleteAnnouncement(id: string) {
+    await supabase.from('announcements').delete().eq('id', id)
+    setAnnouncements(prev => prev.filter(a => a.id !== id))
   }
 
   async function handleSaveSettings() {
@@ -369,6 +406,55 @@ useEffect(() => {
 
       {tab === 'albums' && (
         <div className={styles.body}>
+
+          {(announcements.length > 0 || isOwner) && (
+            <div className={styles.announcementsBlock}>
+              <div className={styles.announcementsHeader}>
+                <div className={styles.announcementsTitle}>
+                  <span className={styles.announcementsIcon}>📣</span>
+                  announcements
+                </div>
+                {isOwner && (
+                  <button
+                    className={styles.btnLime}
+                    onClick={() => setShowNewAnnouncement(true)}
+                  >
+                    + post
+                  </button>
+                )}
+              </div>
+
+              {announcements.length === 0 && isOwner && (
+                <div className={styles.announcementsEmpty}>
+                  No announcements yet. Post one to let your guests know something important.
+                </div>
+              )}
+
+              <div className={styles.announcementsList}>
+                {announcements.map(a => (
+                  <div key={a.id} className={styles.announcementCard}>
+                    <p className={styles.announcementMessage}>{a.message}</p>
+                    <div className={styles.announcementFooter}>
+                      <span className={styles.announcementDate}>
+                        {new Date(a.created_at).toLocaleDateString('en-US', {
+                          month: 'long', day: 'numeric', year: 'numeric'
+                        })}
+                      </span>
+                      {isOwner && (
+                        <button
+                          className={styles.announcementDelete}
+                          onClick={() => handleDeleteAnnouncement(a.id)}
+                        >
+                          remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>albums</h2>
             {canCreateAlbum && (
@@ -527,6 +613,31 @@ useEffect(() => {
               <button className={styles.btnOutline} onClick={() => setShowNewAlbum(false)}>cancel</button>
               <button className={styles.btnLime} onClick={handleCreateAlbum} disabled={creating}>
                 {creating ? 'creating...' : 'create album →'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNewAnnouncement && (
+        <div className={styles.modalOverlay} onClick={() => setShowNewAnnouncement(false)}>
+          <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setShowNewAnnouncement(false)}>✕</button>
+            <h2 className={styles.formTitle}>post announcement</h2>
+            <p className={styles.formSub}>Share something important with everyone in this Space.</p>
+            <label className={styles.label}>Message</label>
+            <textarea
+              className={styles.textarea}
+              value={newMessage}
+              onChange={e => setNewMessage(e.target.value)}
+              placeholder="e.g. Photos will be available for download after the event ends!"
+              rows={4}
+              autoFocus
+            />
+            <div className={styles.formBtns}>
+              <button className={styles.btnOutline} onClick={() => setShowNewAnnouncement(false)}>cancel</button>
+              <button className={styles.btnLime} onClick={handlePostAnnouncement} disabled={postingAnnouncement}>
+                {postingAnnouncement ? 'posting...' : 'post →'}
               </button>
             </div>
           </div>
