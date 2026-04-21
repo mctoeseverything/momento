@@ -1,326 +1,362 @@
-[{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2657",
-	"severity": 8,
-	"message": "JSX expressions must have one parent element.",
-	"source": "ts",
-	"startLineNumber": 407,
-	"startColumn": 9,
-	"endLineNumber": 485,
-	"endColumn": 20,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2322",
-	"severity": 8,
-	"message": "Type '(e: any) => any' is not assignable to type 'ReactNode'.",
-	"source": "ts",
-	"startLineNumber": 432,
-	"startColumn": 25,
-	"endLineNumber": 432,
-	"endColumn": 53,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "7006",
-	"severity": 8,
-	"message": "Parameter 'e' implicitly has an 'any' type.",
-	"source": "ts",
-	"startLineNumber": 432,
-	"startColumn": 27,
-	"endLineNumber": 432,
-	"endColumn": 28,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "1382",
-	"severity": 8,
-	"message": "Unexpected token. Did you mean `{'>'}` or `&gt;`?",
-	"source": "ts",
-	"startLineNumber": 433,
-	"startColumn": 15,
-	"endLineNumber": 433,
-	"endColumn": 16,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "17002",
-	"severity": 8,
-	"message": "Expected corresponding JSX closing tag for 'div'.",
-	"source": "ts",
-	"startLineNumber": 435,
-	"startColumn": 17,
-	"endLineNumber": 435,
-	"endColumn": 18,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "1005",
-	"severity": 8,
-	"message": "')' expected.",
-	"source": "ts",
-	"startLineNumber": 486,
-	"startColumn": 9,
-	"endLineNumber": 486,
-	"endColumn": 11,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "17002",
-	"severity": 8,
-	"message": "Expected corresponding JSX closing tag for 'main'.",
-	"source": "ts",
-	"startLineNumber": 486,
-	"startColumn": 11,
-	"endLineNumber": 486,
-	"endColumn": 14,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'showDeleteAlbum'.",
-	"source": "ts",
-	"startLineNumber": 489,
-	"startColumn": 8,
-	"endLineNumber": 489,
-	"endColumn": 23,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'setShowDeleteAlbum'.",
-	"source": "ts",
-	"startLineNumber": 490,
-	"startColumn": 61,
-	"endLineNumber": 490,
-	"endColumn": 79,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'album'.",
-	"source": "ts",
-	"startLineNumber": 495,
-	"startColumn": 53,
-	"endLineNumber": 495,
-	"endColumn": 58,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'photos'.",
-	"source": "ts",
-	"startLineNumber": 495,
-	"startColumn": 84,
-	"endLineNumber": 495,
-	"endColumn": 90,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'deleteAlbumInput'.",
-	"source": "ts",
-	"startLineNumber": 500,
-	"startColumn": 22,
-	"endLineNumber": 500,
-	"endColumn": 38,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'setDeleteAlbumInput'.",
-	"source": "ts",
-	"startLineNumber": 501,
-	"startColumn": 32,
-	"endLineNumber": 501,
-	"endColumn": 51,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'album'.",
-	"source": "ts",
-	"startLineNumber": 502,
-	"startColumn": 28,
-	"endLineNumber": 502,
-	"endColumn": 33,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'setShowDeleteAlbum'.",
-	"source": "ts",
-	"startLineNumber": 507,
-	"startColumn": 34,
-	"endLineNumber": 507,
-	"endColumn": 52,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'setDeleteAlbumInput'.",
-	"source": "ts",
-	"startLineNumber": 507,
-	"startColumn": 61,
-	"endLineNumber": 507,
-	"endColumn": 80,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'handleDeleteAlbum'.",
-	"source": "ts",
-	"startLineNumber": 513,
-	"startColumn": 26,
-	"endLineNumber": 513,
-	"endColumn": 43,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'deleteAlbumInput'.",
-	"source": "ts",
-	"startLineNumber": 514,
-	"startColumn": 27,
-	"endLineNumber": 514,
-	"endColumn": 43,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'album'.",
-	"source": "ts",
-	"startLineNumber": 514,
-	"startColumn": 48,
-	"endLineNumber": 514,
-	"endColumn": 53,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'deletingAlbum'.",
-	"source": "ts",
-	"startLineNumber": 514,
-	"startColumn": 63,
-	"endLineNumber": 514,
-	"endColumn": 76,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'deletingAlbum'.",
-	"source": "ts",
-	"startLineNumber": 516,
-	"startColumn": 18,
-	"endLineNumber": 516,
-	"endColumn": 31,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "1128",
-	"severity": 8,
-	"message": "Declaration or statement expected.",
-	"source": "ts",
-	"startLineNumber": 523,
-	"startColumn": 5,
-	"endLineNumber": 523,
-	"endColumn": 7,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "2304",
-	"severity": 8,
-	"message": "Cannot find name 'main'.",
-	"source": "ts",
-	"startLineNumber": 523,
-	"startColumn": 7,
-	"endLineNumber": 523,
-	"endColumn": 11,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "1109",
-	"severity": 8,
-	"message": "Expression expected.",
-	"source": "ts",
-	"startLineNumber": 524,
-	"startColumn": 3,
-	"endLineNumber": 524,
-	"endColumn": 4,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Users/brady/momento/src/app/space/[code]/album/[albumId]/page.tsx",
-	"owner": "typescript",
-	"code": "1128",
-	"severity": 8,
-	"message": "Declaration or statement expected.",
-	"source": "ts",
-	"startLineNumber": 525,
-	"startColumn": 1,
-	"endLineNumber": 525,
-	"endColumn": 2,
-	"modelVersionId": 59,
-	"origin": "extHost1"
-}]
+'use client'
+
+import { useEffect, useState, useRef, useCallback } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import styles from './album.module.css'
+
+type Album = { id: string; name: string; emoji: string; space_id: string }
+type Space = { id: string; name: string; code: string; upload_permission: string; owner_id: string }
+type Photo = { id: string; storage_path: string; uploaded_by: string; created_at: string; file_type: string; url?: string }
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024
+
+export default function AlbumPage() {
+  const { code, albumId } = useParams()
+  const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [album, setAlbum] = useState<Album | null>(null)
+  const [space, setSpace] = useState<Space | null>(null)
+  const [photos, setPhotos] = useState<Photo[]>([])
+  const [user, setUser] = useState<any>(null)
+  const [authReady, setAuthReady] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<string[]>([])
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [uploadError, setUploadError] = useState('')
+  const [dragOver, setDragOver] = useState(false)
+  const [uploadName, setUploadName] = useState('')
+  const [showDeleteAlbum, setShowDeleteAlbum] = useState(false)
+  const [deleteAlbumInput, setDeleteAlbumInput] = useState('')
+  const [deletingAlbum, setDeletingAlbum] = useState(false)
+  const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null)
+  const [showReport, setShowReport] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reporting, setReporting] = useState(false)
+  const [reportSent, setReportSent] = useState(false)
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'uploader'>('newest')
+  const [filterUploader, setFilterUploader] = useState<string>('all')
+
+  const lightbox = lightboxIndex !== null ? photos[lightboxIndex] : null
+  const uploaders = [...new Set(photos.map(p => p.uploaded_by))]
+  const displayPhotos = [...photos]
+    .filter(p => filterUploader === 'all' || p.uploaded_by === filterUploader)
+    .sort((a, b) => {
+      if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      if (sortBy === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      if (sortBy === 'uploader') return a.uploaded_by.localeCompare(b.uploaded_by)
+      return 0
+    })
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null)
+      setAuthReady(true)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (authReady && albumId && code) fetchData()
+  }, [authReady, albumId, code])
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (lightboxIndex === null) return
+    if (e.key === 'ArrowRight') setLightboxIndex(i => i !== null ? Math.min(i + 1, photos.length - 1) : null)
+    if (e.key === 'ArrowLeft') setLightboxIndex(i => i !== null ? Math.max(i - 1, 0) : null)
+    if (e.key === 'Escape') setLightboxIndex(null)
+  }, [lightboxIndex, photos.length])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
+
+  async function fetchData() {
+    setLoading(true)
+    const { data: albumData } = await supabase.from('albums').select('*').eq('id', albumId).single()
+    if (!albumData) { setLoading(false); return }
+    setAlbum(albumData)
+    const { data: spaceData } = await supabase.from('spaces').select('*').eq('id', albumData.space_id).single()
+    if (spaceData) setSpace(spaceData)
+    await fetchPhotos()
+    setLoading(false)
+  }
+
+  async function fetchPhotos() {
+    const { data } = await supabase.from('photos').select('*').eq('album_id', albumId).order('created_at', { ascending: false })
+    if (!data) return
+    const withUrls = await Promise.all(data.map(async (photo) => {
+      const { data: urlData } = supabase.storage.from('photos').getPublicUrl(photo.storage_path)
+      return { ...photo, url: urlData.publicUrl }
+    }))
+    setPhotos(withUrls)
+  }
+
+  function canUpload() {
+    if (!space) return false
+    if (user?.id === space.owner_id) return true
+    if (space.upload_permission === 'owner_only') return false
+    if (space.upload_permission === 'code_and_auth') return !!user
+    if (space.upload_permission === 'code_only') return true
+    return false
+  }
+
+  const isOwner = user?.id === space?.owner_id
+
+  async function handleFiles(files: FileList) {
+    if (!canUpload() || !album || !space) return
+    setUploadError('')
+    setUploading(true)
+    setUploadProgress([])
+    const validFiles = Array.from(files).filter(file => {
+      if (file.size > MAX_FILE_SIZE) { setUploadError(file.name + ' is too large. Max 50MB.'); return false }
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) { setUploadError(file.name + ' is not supported.'); return false }
+      return true
+    })
+    for (const file of validFiles) {
+      const ext = file.name.split('.').pop()
+      const fileName = space.id + '/' + album.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext
+      setUploadProgress(prev => [...prev, 'uploading ' + file.name + '...'])
+      const { error: uploadErr } = await supabase.storage.from('photos').upload(fileName, file)
+      if (uploadErr) { setUploadError('Failed to upload ' + file.name); continue }
+      await supabase.from('photos').insert({
+        album_id: album.id, space_id: space.id, storage_path: fileName,
+        uploaded_by: uploadName.trim() || user?.email || 'Anonymous', file_type: file.type,
+      })
+      setUploadProgress(prev => [...prev.slice(0, -1), 'done: ' + file.name])
+    }
+    await fetchPhotos()
+    setUploading(false)
+    setTimeout(() => setUploadProgress([]), 3000)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragOver(false)
+    if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files)
+  }
+
+  async function handleDeletePhoto(photo: Photo) {
+    if (!isOwner) return
+    setDeletingPhoto(photo.id)
+    await supabase.storage.from('photos').remove([photo.storage_path])
+    await supabase.from('photos').delete().eq('id', photo.id)
+    setLightboxIndex(null)
+    await fetchPhotos()
+    setDeletingPhoto(null)
+  }
+
+  async function handleDeleteAlbum() {
+    if (!album || !isOwner) return
+    setDeletingAlbum(true)
+    const { data: albumPhotos } = await supabase.from('photos').select('storage_path').eq('album_id', album.id)
+    if (albumPhotos && albumPhotos.length > 0) await supabase.storage.from('photos').remove(albumPhotos.map(p => p.storage_path))
+    await supabase.from('photos').delete().eq('album_id', album.id)
+    await supabase.from('albums').delete().eq('id', album.id)
+    router.push('/space/' + code)
+  }
+
+  async function handleReport() {
+    if (!lightbox) return
+    setReporting(true)
+    await supabase.from('reports').insert({
+      photo_id: lightbox.id, space_id: space?.id, reported_by: user?.id || null,
+      reason: reportReason.trim() || 'No reason given',
+    })
+    setReporting(false)
+    setReportSent(true)
+    setTimeout(() => { setShowReport(false); setReportSent(false); setReportReason('') }, 2000)
+  }
+
+  function isVideo(photo: Photo) { return photo.file_type?.startsWith('video/') }
+
+  function formatDate(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  }
+
+  function goLeft() { setLightboxIndex(i => i !== null ? Math.max(i - 1, 0) : null) }
+  function goRight() { setLightboxIndex(i => i !== null ? Math.min(i + 1, photos.length - 1) : null) }
+
+  if (loading) return (
+    <div className={styles.loadingScreen}>
+      <div className={styles.loadingLogo}>momento</div>
+      <div className={styles.loadingDots}><span /><span /><span /></div>
+    </div>
+  )
+
+  return (
+    <main className={styles.main}>
+      <nav className={styles.nav}>
+        <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
+        <div className={styles.navRight}>
+          <button className={styles.backBtn} onClick={() => router.push('/space/' + code)}>back to space</button>
+          {canUpload() && (
+            <button className={styles.btnLime} onClick={() => fileInputRef.current?.click()}>+ upload</button>
+          )}
+        </div>
+      </nav>
+
+      <div className={styles.albumHeader}>
+        <div className={styles.albumHeaderInner}>
+          <div className={styles.albumEmojiWrap}><span>{album?.emoji}</span></div>
+          <div className={styles.albumTitleBlock}>
+            <h1 className={styles.albumName}>{album?.name}</h1>
+            <p className={styles.albumMeta}>{photos.length} {photos.length === 1 ? 'item' : 'items'} · {space?.name}</p>
+          </div>
+          {isOwner && (
+            <button className={styles.btnDanger} onClick={() => setShowDeleteAlbum(true)}>delete album</button>
+          )}
+        </div>
+      </div>
+
+      {canUpload() && (
+        <div className={styles.uploadZoneWrap}>
+          <div
+            className={styles.uploadZone + (dragOver ? ' ' + styles.uploadZoneDrag : '')}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <div className={styles.uploadZoneText}>{uploading ? 'uploading...' : 'drag and drop or click to upload'}</div>
+            <div className={styles.uploadZoneSub}>photos and videos up to 50MB each</div>
+            {!user && (
+              <input
+                className={styles.uploadNameInput}
+                placeholder="your name (optional)"
+                value={uploadName}
+                onChange={(e) => { e.stopPropagation(); setUploadName(e.target.value) }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+          </div>
+          {uploadProgress.length > 0 && (
+            <div className={styles.progressList}>
+              {uploadProgress.map((msg, i) => <div key={i} className={styles.progressItem}>{msg}</div>)}
+            </div>
+          )}
+          {uploadError && <div className={styles.uploadError}>{uploadError}</div>}
+        </div>
+      )}
+
+      <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple style={{ display: 'none' }} onChange={(e) => e.target.files && handleFiles(e.target.files)} />
+
+      <div className={styles.body}>
+        {photos.length > 0 && (
+          <div className={styles.sortBar}>
+            <div className={styles.sortGroup}>
+              <label className={styles.sortLabel}>sort</label>
+              <div className={styles.sortBtns}>
+                {(['newest', 'oldest', 'uploader'] as const).map(s => (
+                  <button key={s} className={styles.sortBtn + (sortBy === s ? ' ' + styles.sortBtnActive : '')} onClick={() => setSortBy(s)}>{s}</button>
+                ))}
+              </div>
+            </div>
+            {uploaders.length > 1 && (
+              <div className={styles.sortGroup}>
+                <label className={styles.sortLabel}>filter by</label>
+                <select className={styles.sortSelect} value={filterUploader} onChange={e => setFilterUploader(e.target.value)}>
+                  <option value="all">everyone</option>
+                  {uploaders.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
+              </div>
+            )}
+            <div className={styles.sortCount}>
+              {displayPhotos.length} {displayPhotos.length === 1 ? 'item' : 'items'}
+              {filterUploader !== 'all' && ' by ' + filterUploader}
+            </div>
+          </div>
+        )}
+
+        {photos.length === 0 && !uploading && (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>📷</div>
+            <h3 className={styles.emptyTitle}>no photos yet</h3>
+            <p className={styles.emptySub}>{canUpload() ? 'Be the first to upload!' : 'Nothing here yet.'}</p>
+          </div>
+        )}
+
+        <div className={styles.photoGrid}>
+          {displayPhotos.map((photo) => (
+            <div key={photo.id} className={styles.photoCell} onClick={() => { const i = photos.findIndex(p => p.id === photo.id); setLightboxIndex(i) }}>
+              {isVideo(photo) ? (
+                <div className={styles.videoThumb}>
+                  <video src={photo.url} className={styles.videoThumbEl} muted />
+                  <div className={styles.playIcon}>play</div>
+                </div>
+              ) : (
+                <img src={photo.url} alt="" className={styles.photoImg} loading="lazy" />
+              )}
+              <div className={styles.photoOverlay}>
+                <span className={styles.photoUploader}>{photo.uploaded_by}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {lightbox && lightboxIndex !== null && (
+        <div className={styles.lightboxOverlay} onClick={() => setLightboxIndex(null)}>
+          <button className={styles.lightboxClose} onClick={() => setLightboxIndex(null)}>x</button>
+          <button className={styles.lightboxNavLeft} onClick={(e) => { e.stopPropagation(); goLeft() }} style={{ opacity: lightboxIndex === 0 ? 0.2 : 1 }}>left</button>
+          <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
+            {isVideo(lightbox) ? (
+              <video src={lightbox.url} controls autoPlay className={styles.lightboxMedia} />
+            ) : (
+              <img src={lightbox.url} alt="" className={styles.lightboxMedia} />
+            )}
+            <div className={styles.lightboxInfo}>
+              <span className={styles.lightboxUploader}>{lightbox.uploaded_by}</span>
+              <span className={styles.lightboxDate}>{formatDate(lightbox.created_at)}</span>
+              <span className={styles.lightboxCounter}>{lightboxIndex + 1} / {photos.length}</span>
+              <a href={lightbox.url} download className={styles.lightboxDownload} onClick={(e) => e.stopPropagation()}>download</a>
+              {isOwner && (
+                <button className={styles.lightboxDelete} onClick={(e) => { e.stopPropagation(); handleDeletePhoto(lightbox) }} disabled={deletingPhoto === lightbox.id}>
+                  {deletingPhoto === lightbox.id ? 'deleting...' : 'delete'}
+                </button>
+              )}
+              <button className={styles.reportBtn} onClick={(e) => { e.stopPropagation(); setShowReport(true) }}>report</button>
+            </div>
+            {showReport && (
+              <div className={styles.reportModal} onClick={(e) => e.stopPropagation()}>
+                {reportSent ? (
+                  <div className={styles.reportSent}>reported - we will review it shortly</div>
+                ) : (
+                  <div>
+                    <div className={styles.reportTitle}>report this photo</div>
+                    <textarea className={styles.reportInput} placeholder="why are you reporting this? (optional)" value={reportReason} onChange={e => setReportReason(e.target.value)} rows={3} />
+                    <div className={styles.reportBtns}>
+                      <button className={styles.reportCancelBtn} onClick={() => setShowReport(false)}>cancel</button>
+                      <button className={styles.reportSubmitBtn} onClick={handleReport} disabled={reporting}>{reporting ? 'sending...' : 'submit report'}</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <button className={styles.lightboxNavRight} onClick={(e) => { e.stopPropagation(); goRight() }} style={{ opacity: lightboxIndex === photos.length - 1 ? 0.2 : 1 }}>right</button>
+        </div>
+      )}
+
+      {showDeleteAlbum && (
+        <div className={styles.modalOverlay} onClick={() => setShowDeleteAlbum(false)}>
+          <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.deleteWarningIcon}>!</div>
+            <h2 className={styles.formTitle}>delete this album?</h2>
+            <p className={styles.formSub}>This will permanently delete <strong>{album?.name}</strong> and all {photos.length} files. This cannot be undone.</p>
+            <label className={styles.label}>Type the album name to confirm</label>
+            <input className={styles.input} value={deleteAlbumInput} onChange={(e) => setDeleteAlbumInput(e.target.value)} placeholder={album?.name} />
+            <div className={styles.formBtns}>
+              <button className={styles.btnOutline} onClick={() => { setShowDeleteAlbum(false); setDeleteAlbumInput('') }}>cancel</button>
+              <button className={styles.btnDangerFull} onClick={handleDeleteAlbum} disabled={deleteAlbumInput !== album?.name || deletingAlbum}>
+                {deletingAlbum ? 'deleting...' : 'permanently delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </main>
+  )
+}
