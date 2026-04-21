@@ -1,0 +1,396 @@
+.main {
+  min-height: 100vh;
+  background: #EBEBEA;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  background: #FFFFFF;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #111111;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.backBtn {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #666666;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.backBtn:hover { color: #111111; }
+
+.hero {
+  background: #111111;
+  padding: 5rem 2.5rem;
+  text-align: center;
+}
+
+.heroTag {
+  display: inline-block;
+  background: #C8F025;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 100px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #111111;
+  margin-bottom: 1.2rem;
+  box-shadow: 2px 2px 0 rgba(255,255,255,0.1);
+}
+
+.heroTitle {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #FFFFFF;
+  line-height: 1.0;
+  margin-bottom: 0.8rem;
+}
+
+.heroSub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+
+.body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 4rem 2.5rem;
+}
+
+/* PLANS */
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.planCard {
+  background: #FFFFFF;
+  border: 2px solid #111111;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 4px 5px 0 #111111;
+  position: relative;
+}
+
+.planCardPlus {
+  border-color: #111111;
+  box-shadow: 6px 8px 0 #111111;
+}
+
+.plusBadgeTop {
+  background: #C8F025;
+  color: #111111;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: 0.4rem;
+  border-bottom: 2px solid #111111;
+}
+
+.planHeader {
+  padding: 2rem;
+  border-bottom: 2px solid #111111;
+}
+
+.planName {
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999999;
+  margin-bottom: 0.8rem;
+}
+
+.planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.planPriceNum {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #111111;
+  line-height: 1;
+}
+
+.planPricePer {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #999999;
+}
+
+.planPriceAnnual {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #999999;
+  margin-bottom: 1rem;
+}
+
+.planDesc {
+  font-size: 0.88rem;
+  color: #666666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.planFeatures {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.featureGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.featureGroupTitle {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999999;
+  margin-bottom: 0.2rem;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: #111111;
+  line-height: 1.4;
+}
+
+.feature strong {
+  font-weight: 800;
+}
+
+.featureMissing {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: #bbbbbb;
+  line-height: 1.4;
+}
+
+.featureCheck {
+  color: #C8F025;
+  font-weight: 900;
+  font-size: 0.85rem;
+  background: #111111;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.featureX {
+  color: #dddddd;
+  font-weight: 900;
+  font-size: 0.75rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* BUTTONS */
+.btnLime {
+  display: inline-block;
+  background: #C8F025;
+  color: #111111;
+  border: 2px solid #111111;
+  padding: 0.75rem 1.8rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 3px 4px 0 #111111;
+  text-decoration: none;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.btnLime:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0 #111111;
+}
+
+.btnOutline {
+  display: inline-block;
+  background: transparent;
+  color: #111111;
+  border: 2px solid #111111;
+  padding: 0.75rem 1.8rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.btnOutline:hover { background: #f5f5f5; }
+
+/* ADDON */
+.addonCard {
+  background: #FFFFFF;
+  border: 2px solid #111111;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 3px 4px 0 #111111;
+  margin-bottom: 4rem;
+}
+
+.addonIcon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.addonInfo { flex: 1; }
+
+.addonTitle {
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+  color: #111111;
+  margin-bottom: 0.3rem;
+}
+
+.addonDesc {
+  font-size: 0.82rem;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.addonTag {
+  background: #111111;
+  color: #C8F025;
+  border-radius: 100px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+/* FAQ */
+.faq { margin-bottom: 4rem; }
+
+.faqTitle {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #111111;
+  margin-bottom: 1.5rem;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.faqItem {
+  background: #FFFFFF;
+  border: 2px solid #111111;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 2px 3px 0 #111111;
+}
+
+.faqQ {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111111;
+  margin-bottom: 0.6rem;
+}
+
+.faqA {
+  font-size: 0.85rem;
+  color: #666666;
+  line-height: 1.6;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 2.5rem;
+  border-top: 1px solid #e0e0e0;
+  background: #FFFFFF;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footerLogo {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #111111;
+  letter-spacing: -0.04em;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footerLink {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #999999;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footerLink:hover { color: #111111; }

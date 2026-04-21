@@ -419,3 +419,22 @@
 .footerLink:hover {
   color: #111111;
 }
+
+.pricingBtn {
+  background: #C8F025;
+  color: #111111;
+  border: 2px solid #111111;
+  padding: 0.45rem 1rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 2px 2px 0 #111111;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pricingBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #111111;
+}

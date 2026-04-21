@@ -120,27 +120,30 @@ export default function Home() {
   return (
     <main className={styles.main}>
 
-      <nav className={styles.nav}>
-        <div className={styles.logo}>momento</div>
-        <div className={styles.navLinks}>
-          <button className={styles.navLinkBtn} onClick={() => { setMode('join'); setError('') }}>
-            join a space
-          </button>
-          {user ? (
-            <>
-              <button className={styles.navLinkBtn} onClick={() => router.push('/my-spaces')}>
-                my spaces
-              </button>
-              <span className={styles.navEmail}>{user.email}</span>
-              <button className={styles.btnOutlineSmall} onClick={handleSignOut}>sign out</button>
-            </>
-          ) : (
-            <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
-              sign in
-            </button>
-          )}
-        </div>
-      </nav>
+<nav className={styles.nav}>
+  <div className={styles.logo}>momento</div>
+  <div className={styles.navLinks}>
+    <button className={styles.pricingBtn} onClick={() => router.push('/pricing')}>
+      pricing
+    </button>
+    <button className={styles.navLinkBtn} onClick={() => { setMode('join'); setError('') }}>
+      join a space
+    </button>
+    {user ? (
+      <>
+        <button className={styles.navLinkBtn} onClick={() => router.push('/my-spaces')}>
+          my spaces
+        </button>
+        <span className={styles.navEmail}>{user.email}</span>
+        <button className={styles.btnOutlineSmall} onClick={handleSignOut}>sign out</button>
+      </>
+    ) : (
+      <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
+        sign in
+      </button>
+    )}
+  </div>
+</nav>
 
       <section className={styles.hero}>
         <div className={styles.heroInner}>
