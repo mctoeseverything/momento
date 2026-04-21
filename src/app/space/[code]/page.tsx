@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { QRCodeSVG } from 'qrcode.react'
 import styles from './space.module.css'
 
 type Space = {
@@ -24,6 +25,7 @@ type Album = {
   name: string
   emoji: string
   created_at: string
+  photo_count?: number
 }
 
 type Member = {
@@ -129,6 +131,7 @@ export default function SpacePage() {
   const [savingSettings, setSavingSettings] = useState(false)
   const [settingsSaved, setSettingsSaved] = useState(false)
   const albumEmojis = ['📸', '🌅', '🎉', '💃', '🍕', '🥂', '🎶', '😂', '🌿', '✨']
+  const [copiedLink, setCopiedLink] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -192,13 +195,18 @@ export default function SpacePage() {
   }
 
   async function fetchAlbums(spaceId: string) {
-    const { data } = await supabase
-      .from('albums')
-      .select('*')
-      .eq('space_id', spaceId)
-      .order('created_at', { ascending: true })
-    setAlbums(data || [])
-  }
+  const { data } = await supabase
+    .from('albums')
+    .select('*, photos(count)')
+    .eq('space_id', spaceId)
+    .order('created_at', { ascending: true })
+
+  const withCounts = (data || []).map((album: any) => ({
+    ...album,
+    photo_count: album.photos?.[0]?.count || 0,
+  }))
+  setAlbums(withCounts)
+}
 
   async function fetchMembers(spaceId: string) {
     setLoadingMembers(true)
@@ -219,6 +227,13 @@ export default function SpacePage() {
       .order('created_at', { ascending: false })
     setAnnouncements(data || [])
   }
+
+  function copyLink() {
+  const url = `${window.location.origin}/space/${space?.code}`
+  navigator.clipboard.writeText(url)
+  setCopiedLink(true)
+  setTimeout(() => setCopiedLink(false), 2000)
+}
 
   async function handleCreateAlbum() {
     if (!newAlbum.name.trim() || !space) return
@@ -336,25 +351,27 @@ export default function SpacePage() {
 
   return (
     <main className={styles.main}>
-
-      <nav className={styles.nav}>
-        <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
-        <div className={styles.navRight}>
-          <button className={styles.codeChip} onClick={copyCode}>
-            <span className={styles.codeChipLabel}>code</span>
-            <span className={styles.codeChipValue}>{space?.code}</span>
-            <span className={styles.codeChipCopy}>{copied ? '✓ copied' : 'copy'}</span>
-          </button>
-          {user && (
-            <button
-              className={styles.btnOutlineSmall}
-              onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-            >
-              sign out
-            </button>
-          )}
-        </div>
-      </nav>
+<nav className={styles.nav}>
+  <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
+  <div className={styles.navRight}>
+    <button className={styles.shareLinkBtn} onClick={copyLink}>
+      {copiedLink ? '✓ link copied' : 'share link'}
+    </button>
+    <button className={styles.codeChip} onClick={copyCode}>
+      <span className={styles.codeChipLabel}>code</span>
+      <span className={styles.codeChipValue}>{space?.code}</span>
+      <span className={styles.codeChipCopy}>{copied ? '✓ copied' : 'copy'}</span>
+    </button>
+    {user && (
+      <button
+        className={styles.btnOutlineSmall}
+        onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
+      >
+        sign out
+      </button>
+    )}
+  </div>
+</nav>
 
       <div className={styles.spaceHeader}>
         <div className={styles.spaceHeaderInner}>
@@ -373,7 +390,15 @@ export default function SpacePage() {
             </div>
           </div>
           <div className={styles.qrBlock}>
-            <div className={styles.qrBox}><QRCode /></div>
+            <div className={styles.qrBox}>
+  <QRCodeSVG
+    value={`${typeof window !== 'undefined' ? window.location.origin : ''}/space/${space?.code}`}
+    size={100}
+    bgColor="#111111"
+    fgColor="#C8F025"
+    level="M"
+  />
+</div>
             <p className={styles.qrLabel}>scan to join</p>
           </div>
         </div>
@@ -487,10 +512,12 @@ export default function SpacePage() {
                 <div className={styles.albumThumb}>
                   <span className={styles.albumThumbEmoji}>{album.emoji}</span>
                 </div>
-                <div className={styles.albumInfo}>
-                  <div className={styles.albumName}>{album.name}</div>
-                  <div className={styles.albumCount}>tap to view</div>
-                </div>
+            <div className={styles.albumInfo}>
+  <div className={styles.albumName}>{album.name}</div>
+  <div className={styles.albumCount}>
+    {album.photo_count} {album.photo_count === 1 ? 'item' : 'items'}
+  </div>
+</div>
               </div>
             ))}
             {canCreateAlbum && (
@@ -676,33 +703,5 @@ function PermissionGroup({ title, subtitle, options, value, onChange }: {
         ))}
       </div>
     </div>
-  )
-}
-
-function QRCode() {
-  return (
-    <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100" height="100" fill="#111111" rx="8"/>
-      <rect x="10" y="10" width="30" height="30" rx="3" fill="#C8F025"/>
-      <rect x="14" y="14" width="22" height="22" rx="2" fill="#111111"/>
-      <rect x="18" y="18" width="14" height="14" rx="1" fill="#C8F025"/>
-      <rect x="60" y="10" width="30" height="30" rx="3" fill="#C8F025"/>
-      <rect x="64" y="14" width="22" height="22" rx="2" fill="#111111"/>
-      <rect x="68" y="18" width="14" height="14" rx="1" fill="#C8F025"/>
-      <rect x="10" y="60" width="30" height="30" rx="3" fill="#C8F025"/>
-      <rect x="14" y="64" width="22" height="22" rx="2" fill="#111111"/>
-      <rect x="18" y="68" width="14" height="14" rx="1" fill="#C8F025"/>
-      <rect x="46" y="46" width="8" height="8" fill="#C8F025"/>
-      <rect x="56" y="46" width="8" height="8" fill="#C8F025"/>
-      <rect x="66" y="46" width="8" height="8" fill="#C8F025"/>
-      <rect x="76" y="46" width="8" height="8" fill="#C8F025"/>
-      <rect x="46" y="56" width="8" height="8" fill="#C8F025"/>
-      <rect x="66" y="56" width="8" height="8" fill="#C8F025"/>
-      <rect x="46" y="66" width="8" height="8" fill="#C8F025"/>
-      <rect x="56" y="66" width="8" height="8" fill="#C8F025"/>
-      <rect x="76" y="66" width="8" height="8" fill="#C8F025"/>
-      <rect x="56" y="76" width="8" height="8" fill="#C8F025"/>
-      <rect x="66" y="76" width="8" height="8" fill="#C8F025"/>
-    </svg>
   )
 }
