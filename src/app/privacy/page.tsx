@@ -147,7 +147,7 @@ export default function PrivacyPage() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>12. contact</h2>
             <p>
-              If you have any questions or requests regarding this Privacy Policy, please contact us. We will make reasonable efforts to respond promptly.
+              If you have any questions or requests regarding this Privacy Policy, contact us directly at hi@momento.fyi. We will make reasonable efforts to respond promptly.
             </p>
           </section>
 

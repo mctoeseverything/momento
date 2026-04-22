@@ -14,7 +14,7 @@ export default function RestrictedPage() {
           <p className={styles.sub}>
             Your account has been terminated for violating Momento's{' '}
             <Link href="/terms" className={styles.link}>Terms of Service</Link>.
-            If you believe this is a mistake, please contact us.
+            If you believe this is a mistake, please contact appeals@momento.fyi.
           </p>
         </div>
       </div>

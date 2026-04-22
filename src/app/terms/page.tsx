@@ -161,7 +161,7 @@ export default function TermsPage() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>15. contact</h2>
             <p>
-              If you have questions about these Terms, please contact us. We will make reasonable efforts to respond promptly.
+              If you have questions about these Terms, please contact us at hi@momento.fyi. We will make reasonable efforts to respond promptly.
             </p>
           </section>
 
