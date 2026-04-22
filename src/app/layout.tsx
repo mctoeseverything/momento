@@ -40,11 +40,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Momento" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
-      import ServiceWorker from './components/ServiceWorker'
-<body>
-  <ServiceWorker />
-  {children}
-</body>
+      <body>
+        <ServiceWorker />
+        {children}
+      </body>
     </html>
   )
 }
