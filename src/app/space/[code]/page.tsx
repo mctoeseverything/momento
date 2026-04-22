@@ -100,6 +100,8 @@ const ALBUM_OPTIONS = [
   },
 ]
 
+const SPACE_EMOJIS = ['🌅', '🎉', '💍', '🏖', '🎂', '🌿', '🎸', '🏔', '📸', '✨', '🎶', '🥂', '💃', '🍕', '😂']
+
 export default function SpacePage() {
   const { code } = useParams()
   const router = useRouter()
@@ -132,6 +134,15 @@ export default function SpacePage() {
   const [settingsSaved, setSettingsSaved] = useState(false)
   const albumEmojis = ['📸', '🌅', '🎉', '💃', '🍕', '🥂', '🎶', '😂', '🌿', '✨']
   const [copiedLink, setCopiedLink] = useState(false)
+
+  // Edit space state
+  const [editSpace, setEditSpace] = useState({ name: '', description: '', emoji: '' })
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [editSaved, setEditSaved] = useState(false)
+
+  // Leave space state
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
+  const [leaving, setLeaving] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -179,6 +190,11 @@ export default function SpacePage() {
       upload_permission: spaceData.upload_permission,
       album_permission: spaceData.album_permission,
     })
+    setEditSpace({
+      name: spaceData.name,
+      description: spaceData.description || '',
+      emoji: spaceData.emoji,
+    })
 
     if (user) {
       await supabase.from('space_members').upsert({
@@ -195,18 +211,18 @@ export default function SpacePage() {
   }
 
   async function fetchAlbums(spaceId: string) {
-  const { data } = await supabase
-    .from('albums')
-    .select('*, photos(count)')
-    .eq('space_id', spaceId)
-    .order('created_at', { ascending: true })
+    const { data } = await supabase
+      .from('albums')
+      .select('*, photos(count)')
+      .eq('space_id', spaceId)
+      .order('created_at', { ascending: true })
 
-  const withCounts = (data || []).map((album: any) => ({
-    ...album,
-    photo_count: album.photos?.[0]?.count || 0,
-  }))
-  setAlbums(withCounts)
-}
+    const withCounts = (data || []).map((album: any) => ({
+      ...album,
+      photo_count: album.photos?.[0]?.count || 0,
+    }))
+    setAlbums(withCounts)
+  }
 
   async function fetchMembers(spaceId: string) {
     setLoadingMembers(true)
@@ -229,11 +245,11 @@ export default function SpacePage() {
   }
 
   function copyLink() {
-  const url = `${window.location.origin}/space/${space?.code}`
-  navigator.clipboard.writeText(url)
-  setCopiedLink(true)
-  setTimeout(() => setCopiedLink(false), 2000)
-}
+    const url = `${window.location.origin}/space/${space?.code}`
+    navigator.clipboard.writeText(url)
+    setCopiedLink(true)
+    setTimeout(() => setCopiedLink(false), 2000)
+  }
 
   async function handleCreateAlbum() {
     if (!newAlbum.name.trim() || !space) return
@@ -289,6 +305,37 @@ export default function SpacePage() {
       setTimeout(() => setSettingsSaved(false), 3000)
     }
     setSavingSettings(false)
+  }
+
+  async function handleSaveEdit() {
+    if (!space || !editSpace.name.trim()) return
+    setSavingEdit(true)
+    const { error } = await supabase
+      .from('spaces')
+      .update({
+        name: editSpace.name.trim(),
+        description: editSpace.description.trim(),
+        emoji: editSpace.emoji,
+      })
+      .eq('id', space.id)
+      .eq('owner_id', user?.id)
+    if (!error) {
+      setSpace({ ...space, name: editSpace.name.trim(), description: editSpace.description.trim(), emoji: editSpace.emoji })
+      setEditSaved(true)
+      setTimeout(() => setEditSaved(false), 3000)
+    }
+    setSavingEdit(false)
+  }
+
+  async function handleLeaveSpace() {
+    if (!space || !user) return
+    setLeaving(true)
+    await supabase
+      .from('space_members')
+      .delete()
+      .eq('space_id', space.id)
+      .eq('user_id', user.id)
+    router.push('/my-spaces')
   }
 
   function copyCode() {
@@ -351,27 +398,27 @@ export default function SpacePage() {
 
   return (
     <main className={styles.main}>
-<nav className={styles.nav}>
-  <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
-  <div className={styles.navRight}>
-    <button className={styles.shareLinkBtn} onClick={copyLink}>
-      {copiedLink ? '✓ link copied' : 'share link'}
-    </button>
-    <button className={styles.codeChip} onClick={copyCode}>
-      <span className={styles.codeChipLabel}>code</span>
-      <span className={styles.codeChipValue}>{space?.code}</span>
-      <span className={styles.codeChipCopy}>{copied ? '✓ copied' : 'copy'}</span>
-    </button>
-    {user && (
-      <button
-        className={styles.btnOutlineSmall}
-        onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-      >
-        sign out
-      </button>
-    )}
-  </div>
-</nav>
+      <nav className={styles.nav}>
+        <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
+        <div className={styles.navRight}>
+          <button className={styles.shareLinkBtn} onClick={copyLink}>
+            {copiedLink ? '✓ link copied' : 'share link'}
+          </button>
+          <button className={styles.codeChip} onClick={copyCode}>
+            <span className={styles.codeChipLabel}>code</span>
+            <span className={styles.codeChipValue}>{space?.code}</span>
+            <span className={styles.codeChipCopy}>{copied ? '✓ copied' : 'copy'}</span>
+          </button>
+          {user && (
+            <button
+              className={styles.btnOutlineSmall}
+              onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
+            >
+              sign out
+            </button>
+          )}
+        </div>
+      </nav>
 
       <div className={styles.spaceHeader}>
         <div className={styles.spaceHeaderInner}>
@@ -391,14 +438,14 @@ export default function SpacePage() {
           </div>
           <div className={styles.qrBlock}>
             <div className={styles.qrBox}>
-  <QRCodeSVG
-    value={`${typeof window !== 'undefined' ? window.location.origin : ''}/space/${space?.code}`}
-    size={100}
-    bgColor="#111111"
-    fgColor="#C8F025"
-    level="M"
-  />
-</div>
+              <QRCodeSVG
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/space/${space?.code}`}
+                size={100}
+                bgColor="#111111"
+                fgColor="#C8F025"
+                level="M"
+              />
+            </div>
             <p className={styles.qrLabel}>scan to join</p>
           </div>
         </div>
@@ -512,12 +559,12 @@ export default function SpacePage() {
                 <div className={styles.albumThumb}>
                   <span className={styles.albumThumbEmoji}>{album.emoji}</span>
                 </div>
-            <div className={styles.albumInfo}>
-  <div className={styles.albumName}>{album.name}</div>
-  <div className={styles.albumCount}>
-    {album.photo_count} {album.photo_count === 1 ? 'item' : 'items'}
-  </div>
-</div>
+                <div className={styles.albumInfo}>
+                  <div className={styles.albumName}>{album.name}</div>
+                  <div className={styles.albumCount}>
+                    {album.photo_count} {album.photo_count === 1 ? 'item' : 'items'}
+                  </div>
+                </div>
               </div>
             ))}
             {canCreateAlbum && (
@@ -527,6 +574,18 @@ export default function SpacePage() {
               </div>
             )}
           </div>
+
+          {/* Leave space — for non-owners who are signed in */}
+          {user && !isOwner && (
+            <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e0e0e0' }}>
+              <button
+                className={styles.btnDangerOutline}
+                onClick={() => setShowLeaveConfirm(true)}
+              >
+                leave this space
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -574,6 +633,53 @@ export default function SpacePage() {
       {tab === 'settings' && isOwner && (
         <div className={styles.body}>
           <div className={styles.settingsSection}>
+
+            {/* Edit space details */}
+            <div className={styles.permGroup}>
+              <h3 className={styles.permTitle}>space details</h3>
+              <p className={styles.permSubtitle}>Update the name, description, and icon for your Space.</p>
+
+              <label className={styles.label}>Name</label>
+              <input
+                className={styles.input}
+                value={editSpace.name}
+                onChange={e => setEditSpace({ ...editSpace, name: e.target.value })}
+                placeholder="e.g. Jake & Mia's Wedding"
+              />
+
+              <label className={styles.label}>Description (optional)</label>
+              <input
+                className={styles.input}
+                value={editSpace.description}
+                onChange={e => setEditSpace({ ...editSpace, description: e.target.value })}
+                placeholder="e.g. June 14, 2025 · The Grand Ballroom"
+              />
+
+              <label className={styles.label}>Icon</label>
+              <div className={styles.emojiRow} style={{ marginBottom: '1.2rem' }}>
+                {SPACE_EMOJIS.map(e => (
+                  <button
+                    key={e}
+                    className={`${styles.emojiBtn} ${editSpace.emoji === e ? styles.emojiBtnActive : ''}`}
+                    onClick={() => setEditSpace({ ...editSpace, emoji: e })}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'flex-end' }}>
+                {editSaved && <span className={styles.savedBadge}>✓ saved!</span>}
+                <button
+                  className={styles.btnLime}
+                  onClick={handleSaveEdit}
+                  disabled={savingEdit || !editSpace.name.trim()}
+                >
+                  {savingEdit ? 'saving...' : 'save details →'}
+                </button>
+              </div>
+            </div>
+
             <PermissionGroup
               title="Who can view this Space?"
               subtitle="Controls who can see your Space and its albums."
@@ -665,6 +771,29 @@ export default function SpacePage() {
               <button className={styles.btnOutline} onClick={() => setShowNewAnnouncement(false)}>cancel</button>
               <button className={styles.btnLime} onClick={handlePostAnnouncement} disabled={postingAnnouncement}>
                 {postingAnnouncement ? 'posting...' : 'post →'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Leave space confirmation modal */}
+      {showLeaveConfirm && (
+        <div className={styles.modalOverlay} onClick={() => setShowLeaveConfirm(false)}>
+          <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setShowLeaveConfirm(false)}>✕</button>
+            <h2 className={styles.formTitle}>leave this space?</h2>
+            <p className={styles.formSub}>
+              You'll be removed from <strong>{space?.name}</strong>. You can rejoin anytime with the code.
+            </p>
+            <div className={styles.formBtns}>
+              <button className={styles.btnOutline} onClick={() => setShowLeaveConfirm(false)}>cancel</button>
+              <button
+                className={styles.btnDanger}
+                onClick={handleLeaveSpace}
+                disabled={leaving}
+              >
+                {leaving ? 'leaving...' : 'leave space'}
               </button>
             </div>
           </div>

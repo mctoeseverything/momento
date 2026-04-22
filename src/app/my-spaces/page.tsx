@@ -29,47 +29,52 @@ export default function MySpacesPage() {
     })
   }, [])
 
-async function fetchSpaces(userId: string) {
-  setLoading(true)
+  async function fetchSpaces(userId: string) {
+    setLoading(true)
 
-  const { data: owned } = await supabase
-    .from('spaces')
-    .select('*')
-    .eq('owner_id', userId)
-    .eq('terminated', false)
-    .order('created_at', { ascending: false })
-
-  setSpaces(owned || [])
-
-  const { data: memberRows } = await supabase
-    .from('space_members')
-    .select('space_id')
-    .eq('user_id', userId)
-
-  if (memberRows && memberRows.length > 0) {
-    const ids = memberRows.map(r => r.space_id)
-    const { data: joined } = await supabase
+    const { data: owned } = await supabase
       .from('spaces')
       .select('*')
-      .in('id', ids)
-      .neq('owner_id', userId)
+      .eq('owner_id', userId)
       .eq('terminated', false)
       .order('created_at', { ascending: false })
-    setJoinedSpaces(joined || [])
-  } else {
-    setJoinedSpaces([])
-  }
 
-  setLoading(false)
-}
+    setSpaces(owned || [])
+
+    const { data: memberRows } = await supabase
+      .from('space_members')
+      .select('space_id')
+      .eq('user_id', userId)
+
+    if (memberRows && memberRows.length > 0) {
+      const ids = memberRows.map(r => r.space_id)
+      const { data: joined } = await supabase
+        .from('spaces')
+        .select('*')
+        .in('id', ids)
+        .neq('owner_id', userId)
+        .eq('terminated', false)
+        .order('created_at', { ascending: false })
+      setJoinedSpaces(joined || [])
+    } else {
+      setJoinedSpaces([])
+    }
+
+    setLoading(false)
+  }
 
   return (
     <main className={styles.main}>
       <nav className={styles.nav}>
         <div className={styles.logo} onClick={() => router.push('/')}>momento</div>
-        <button className={styles.btnOutlineSmall} onClick={() => supabase.auth.signOut().then(() => router.push('/'))}>
-          sign out
-        </button>
+        <div className={styles.navRight}>
+          <button className={styles.btnOutlineSmall} onClick={() => router.push('/profile')}>
+            account
+          </button>
+          <button className={styles.btnOutlineSmall} onClick={() => supabase.auth.signOut().then(() => router.push('/'))}>
+            sign out
+          </button>
+        </div>
       </nav>
 
       <div className={styles.body}>
@@ -116,32 +121,38 @@ async function fetchSpaces(userId: string) {
               </div>
             )}
 
-            {joinedSpaces.length > 0 && (
-              <>
-                <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
-                  <h2 className={styles.sectionTitle}>spaces i joined</h2>
-                  <span className={styles.sectionCount}>{joinedSpaces.length}</span>
-                </div>
-                <div className={styles.spacesGrid}>
-                  {joinedSpaces.map(space => (
-                    <div key={space.id} className={styles.spaceCard} onClick={() => router.push('/space/' + space.code)}>
-                      <div className={styles.spaceCardEmoji}>{space.emoji}</div>
-                      <div className={styles.spaceCardInfo}>
-                        <div className={styles.spaceCardName}>{space.name}</div>
-                        {space.description && (
-                          <div className={styles.spaceCardDesc}>{space.description}</div>
-                        )}
-                        <div className={styles.spaceCardMeta}>
-                          <span className={styles.codeChip}>{space.code}</span>
-                          <span className={styles.spaceCardDate}>
-                            {new Date(space.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                        </div>
+            <div className={styles.sectionHeader} style={{ marginTop: '3rem' }}>
+              <h2 className={styles.sectionTitle}>spaces i joined</h2>
+              <span className={styles.sectionCount}>{joinedSpaces.length}</span>
+            </div>
+
+            {joinedSpaces.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>🔗</div>
+                <h3 className={styles.emptyTitle}>no joined spaces</h3>
+                <p className={styles.emptySub}>Enter a code on the home page to join a Space.</p>
+                <button className={styles.btnLime} onClick={() => router.push('/')}>join a space →</button>
+              </div>
+            ) : (
+              <div className={styles.spacesGrid}>
+                {joinedSpaces.map(space => (
+                  <div key={space.id} className={styles.spaceCard} onClick={() => router.push('/space/' + space.code)}>
+                    <div className={styles.spaceCardEmoji}>{space.emoji}</div>
+                    <div className={styles.spaceCardInfo}>
+                      <div className={styles.spaceCardName}>{space.name}</div>
+                      {space.description && (
+                        <div className={styles.spaceCardDesc}>{space.description}</div>
+                      )}
+                      <div className={styles.spaceCardMeta}>
+                        <span className={styles.codeChip}>{space.code}</span>
+                        <span className={styles.spaceCardDate}>
+                          {new Date(space.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </>
+                  </div>
+                ))}
+              </div>
             )}
           </>
         )}
