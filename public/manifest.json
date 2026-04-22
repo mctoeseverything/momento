@@ -2,7 +2,7 @@
   "name": "Momento",
   "short_name": "Momento",
   "description": "Shared photo spaces for every occasion",
-  "start_url": "/",
+ "start_url": "https://momento.fyi/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#111111",
