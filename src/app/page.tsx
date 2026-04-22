@@ -134,13 +134,17 @@ export default function Home() {
         <button className={styles.navLinkBtn} onClick={() => router.push('/my-spaces')}>
           my spaces
         </button>
+        <div style={{ width: 1, height: 20, background: '#e0e0e0' }} />
         <span className={styles.navEmail}>{user.email}</span>
         <button className={styles.btnOutlineSmall} onClick={handleSignOut}>sign out</button>
       </>
     ) : (
-      <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
-        sign in
-      </button>
+      <>
+        <div style={{ width: 1, height: 20, background: '#e0e0e0' }} />
+        <button className={styles.btnLime} onClick={() => { setMode('auth'); setAuthStep('email'); setError('') }}>
+          sign in
+        </button>
+      </>
     )}
   </div>
 </nav>
