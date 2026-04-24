@@ -593,3 +593,106 @@
   from { transform: translateX(-50%) translateY(10px); opacity: 0; }
   to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+/* Add this to admin.module.css */
+
+.uidChip {
+  display: inline-block;
+  background: #1a1a1a;
+  color: #C8F025;
+  border-radius: 5px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-family: monospace;
+  vertical-align: middle;
+}
+
+.reportMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.reportMetaItem {
+  font-size: 0.78rem;
+  color: #999999;
+}
+
+.reportMetaDot {
+  color: #cccccc;
+  font-size: 0.78rem;
+}
+
+.reportActionsTop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.moreInfoWrap {
+  position: relative;
+}
+
+.moreInfoBtn {
+  background: #EBEBEA;
+  border: 1px solid #d0d0d0;
+  color: #666666;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.moreInfoBtn:hover {
+  background: #111111;
+  color: white;
+  border-color: #111111;
+}
+
+.moreInfoPopup {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: #111111;
+  border-radius: 10px;
+  padding: 0.4rem;
+  z-index: 20;
+  min-width: 160px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.moreInfoItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.8rem;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.moreInfoItem:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.reportPhotoMissing {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #999999;
+}

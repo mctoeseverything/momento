@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import styles from './profile.module.css'
 
+function shortId(uuid: string): string {
+  return uuid.replace(/-/g, '').slice(0, 6).toUpperCase()
+}
+
 export default function ProfilePage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
@@ -72,6 +76,8 @@ export default function ProfilePage() {
     </div>
   )
 
+  const uid = user ? shortId(user.id) : ''
+
   return (
     <main className={styles.main}>
       <nav className={styles.nav}>
@@ -136,6 +142,12 @@ export default function ProfilePage() {
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Email</span>
             <span className={styles.infoValue}>{user?.email}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>User ID</span>
+            <span className={styles.infoValue}>
+              <span className={styles.uidBadge}>{uid}</span>
+            </span>
           </div>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>Sign-in method</span>

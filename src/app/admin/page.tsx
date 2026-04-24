@@ -15,6 +15,7 @@ type Space = {
   created_at: string
   owner_id: string
   owner_email?: string
+  owner_uid?: string
 }
 
 type Photo = {
@@ -39,6 +40,7 @@ type Report = {
   created_at: string
   reported_by: string
   reporter_email?: string
+  reporter_uid?: string
   photo?: {
     id: string
     storage_path: string
@@ -65,9 +67,14 @@ type UserProfile = {
   is_admin: boolean
   onboarded: boolean
   created_at: string
+  short_id: string
 }
 
 type Tab = 'overview' | 'spaces' | 'photos' | 'users' | 'reports'
+
+function shortId(uuid: string): string {
+  return uuid.replace(/-/g, '').slice(0, 6).toUpperCase()
+}
 
 export default function AdminPage() {
   const router = useRouter()
@@ -122,24 +129,28 @@ export default function AdminPage() {
     })
   }
 
- async function fetchSpaces() {
-  const { data } = await supabase
-    .from('spaces')
-    .select('*')
-    .eq('terminated', false)
-    .order('created_at', { ascending: false })
-    .limit(100)
-  if (!data) return
-  const withEmails = await Promise.all(data.map(async space => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', space.owner_id)
-      .single()
-    return { ...space, owner_email: profile?.display_name || 'Unknown' }
-  }))
-  setSpaces(withEmails)
-}
+  async function fetchSpaces() {
+    const { data } = await supabase
+      .from('spaces')
+      .select('*')
+      .eq('terminated', false)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    if (!data) return
+    const withEmails = await Promise.all(data.map(async space => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name, id')
+        .eq('id', space.owner_id)
+        .single()
+      return {
+        ...space,
+        owner_email: profile?.display_name || 'Unknown',
+        owner_uid: profile?.id ? shortId(profile.id) : '——',
+      }
+    }))
+    setSpaces(withEmails)
+  }
 
   async function fetchPhotos() {
     const { data } = await supabase
@@ -161,70 +172,69 @@ export default function AdminPage() {
       .select('*')
       .order('created_at', { ascending: false })
       .limit(100)
-    setUsers(data || [])
+    const withShortIds = (data || []).map(u => ({ ...u, short_id: shortId(u.id) }))
+    setUsers(withShortIds)
   }
 
-async function fetchReports() {
-  const { data } = await supabase
-    .from('reports')
-    .select('*')
-    .eq('resolved', false)
-    .order('created_at', { ascending: false })
+  async function fetchReports() {
+    const { data } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('resolved', false)
+      .order('created_at', { ascending: false })
 
-  if (!data) { setReports([]); return }
+    if (!data) { setReports([]); return }
 
-  const enriched = await Promise.all(data.map(async report => {
-    // Get photo
-    let photoWithUrl = null
-    if (report.photo_id) {
-      const { data: photo } = await supabase
-        .from('photos')
-        .select('*')
-        .eq('id', report.photo_id)
-        .single()
-      if (photo) {
-        const { data: urlData } = supabase.storage
+    const enriched = await Promise.all(data.map(async report => {
+      let photoWithUrl = null
+      if (report.photo_id) {
+        const { data: photo } = await supabase
           .from('photos')
-          .getPublicUrl(photo.storage_path)
-        photoWithUrl = { ...photo, url: urlData.publicUrl }
+          .select('*')
+          .eq('id', report.photo_id)
+          .single()
+        if (photo) {
+          const { data: urlData } = supabase.storage
+            .from('photos')
+            .getPublicUrl(photo.storage_path)
+          photoWithUrl = { ...photo, url: urlData.publicUrl }
+        }
       }
-    }
 
-    // Get space
-    let space = null
-    if (report.space_id) {
-      const { data: spaceData } = await supabase
-        .from('spaces')
-        .select('name, code')
-        .eq('id', report.space_id)
-        .single()
-      space = spaceData
-    }
+      let space = null
+      if (report.space_id) {
+        const { data: spaceData } = await supabase
+          .from('spaces')
+          .select('name, code')
+          .eq('id', report.space_id)
+          .single()
+        space = spaceData
+      }
 
-    // Get album
-    let album = null
-    if (photoWithUrl?.album_id) {
-      const { data: albumData } = await supabase
-        .from('albums')
-        .select('id, name')
-        .eq('id', photoWithUrl.album_id)
-        .single()
-      album = albumData
-    }
+      let album = null
+      if (photoWithUrl?.album_id) {
+        const { data: albumData } = await supabase
+          .from('albums')
+          .select('id, name')
+          .eq('id', photoWithUrl.album_id)
+          .single()
+        album = albumData
+      }
 
-    // Get reporter email
-    let reporter_email = 'Anonymous'
-    if (report.reported_by) {
-      const { data: emailData } = await supabase
-        .rpc('get_user_email', { user_id: report.reported_by })
-      if (emailData) reporter_email = emailData
-    }
+      let reporter_email = 'Anonymous'
+      let reporter_uid = ''
+      if (report.reported_by) {
+        const { data: emailData } = await supabase
+          .rpc('get_user_email', { user_id: report.reported_by })
+        if (emailData) reporter_email = emailData
+        reporter_uid = shortId(report.reported_by)
+      }
 
-    return { ...report, photo: photoWithUrl, space, album, reporter_email }
-  }))
+      return { ...report, photo: photoWithUrl, space, album, reporter_email, reporter_uid }
+    }))
 
-  setReports(enriched)
-}
+    setReports(enriched)
+  }
 
   function showToast(msg: string) {
     setToast(msg)
@@ -256,51 +266,46 @@ async function fetchReports() {
     setWorking(false)
   }
 
-async function handleDeleteSpace(spaceId: string) {
-  setWorking(true)
-  const { data: spacePhotos } = await supabase.from('photos').select('storage_path').eq('space_id', spaceId)
-  if (spacePhotos && spacePhotos.length > 0) {
-    await supabase.storage.from('photos').remove(spacePhotos.map(p => p.storage_path))
-  }
-  await supabase.from('photos').delete().eq('space_id', spaceId)
-  await supabase.from('albums').delete().eq('space_id', spaceId)
-  await supabase.from('space_members').delete().eq('space_id', spaceId)
-  await supabase.from('spaces').update({ terminated: true }).eq('id', spaceId)
-  setSpaces(prev => prev.filter(s => s.id !== spaceId))
-  setStats(prev => ({ ...prev, spaces: prev.spaces - 1 }))
-  setConfirmDelete(null)
-  showToast('Space terminated.')
-  router.refresh()
-  setWorking(false)
-}
-
- async function handleTerminateUser(userId: string) {
-  setWorking(true)
-
-  const { data: userSpaces } = await supabase
-    .from('spaces')
-    .select('id')
-    .eq('owner_id', userId)
-
-  if (userSpaces) {
-    for (const space of userSpaces) {
-      await handleDeleteSpace(space.id)
+  async function handleDeleteSpace(spaceId: string) {
+    setWorking(true)
+    const { data: spacePhotos } = await supabase.from('photos').select('storage_path').eq('space_id', spaceId)
+    if (spacePhotos && spacePhotos.length > 0) {
+      await supabase.storage.from('photos').remove(spacePhotos.map(p => p.storage_path))
     }
+    await supabase.from('photos').delete().eq('space_id', spaceId)
+    await supabase.from('albums').delete().eq('space_id', spaceId)
+    await supabase.from('space_members').delete().eq('space_id', spaceId)
+    await supabase.from('spaces').update({ terminated: true }).eq('id', spaceId)
+    setSpaces(prev => prev.filter(s => s.id !== spaceId))
+    setStats(prev => ({ ...prev, spaces: prev.spaces - 1 }))
+    setConfirmDelete(null)
+    showToast('Space terminated.')
+    router.refresh()
+    setWorking(false)
   }
 
-  await supabase.from('space_members').delete().eq('user_id', userId)
+  async function handleTerminateUser(userId: string) {
+    setWorking(true)
 
-  // Mark as restricted — keeps the profile so we can block them on login
-  await supabase.from('profiles').upsert({
-    id: userId,
-    restricted: true,
-  })
+    const { data: userSpaces } = await supabase
+      .from('spaces')
+      .select('id')
+      .eq('owner_id', userId)
 
-  setUsers(prev => prev.filter(u => u.id !== userId))
-  setConfirmTerminate(null)
-  showToast('Account terminated.')
-  setWorking(false)
-}
+    if (userSpaces) {
+      for (const space of userSpaces) {
+        await handleDeleteSpace(space.id)
+      }
+    }
+
+    await supabase.from('space_members').delete().eq('user_id', userId)
+    await supabase.from('profiles').upsert({ id: userId, restricted: true })
+
+    setUsers(prev => prev.filter(u => u.id !== userId))
+    setConfirmTerminate(null)
+    showToast('Account terminated.')
+    setWorking(false)
+  }
 
   async function handleResolveReport(reportId: string) {
     await supabase.from('reports').update({ resolved: true }).eq('id', reportId)
@@ -308,8 +313,16 @@ async function handleDeleteSpace(spaceId: string) {
     showToast('Report resolved.')
   }
 
-  const filteredSpaces = spaces.filter(s => s.name.toLowerCase().includes(search.toLowerCase()) || s.code.toLowerCase().includes(search.toLowerCase()))
-  const filteredUsers = users.filter(u => u.email?.toLowerCase().includes(search.toLowerCase()) || u.display_name?.toLowerCase().includes(search.toLowerCase()))
+  const filteredSpaces = spaces.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    s.code.toLowerCase().includes(search.toLowerCase()) ||
+    s.owner_uid?.toLowerCase().includes(search.toLowerCase())
+  )
+  const filteredUsers = users.filter(u =>
+    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    u.display_name?.toLowerCase().includes(search.toLowerCase()) ||
+    u.short_id?.toLowerCase().includes(search.toLowerCase())
+  )
 
   if (loading) return (
     <div className={styles.loadingScreen}>
@@ -375,7 +388,7 @@ async function handleDeleteSpace(spaceId: string) {
           <div>
             <div className={styles.sectionHeader}>
               <h1 className={styles.pageTitle}>spaces</h1>
-              <input className={styles.searchInput} placeholder="search by name or code..." value={search} onChange={e => setSearch(e.target.value)} />
+              <input className={styles.searchInput} placeholder="search name, code, or user ID..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <div className={styles.tableWrap}>
               <table className={styles.table}>
@@ -396,7 +409,12 @@ async function handleDeleteSpace(spaceId: string) {
                         {space.name}
                       </td>
                       <td><span className={styles.codeChip}>{space.code}</span></td>
-                      <td>{space.owner_email}</td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          {space.owner_email}
+                          <span className={styles.uidChip}>{space.owner_uid}</span>
+                        </div>
+                      </td>
                       <td>{new Date(space.created_at).toLocaleDateString()}</td>
                       <td>
                         <div className={styles.actionBtns}>
@@ -437,13 +455,14 @@ async function handleDeleteSpace(spaceId: string) {
           <div>
             <div className={styles.sectionHeader}>
               <h1 className={styles.pageTitle}>users</h1>
-              <input className={styles.searchInput} placeholder="search by email or name..." value={search} onChange={e => setSearch(e.target.value)} />
+              <input className={styles.searchInput} placeholder="search by email, name, or ID..." value={search} onChange={e => setSearch(e.target.value)} />
             </div>
             <div className={styles.tableWrap}>
               <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>user</th>
+                    <th>user ID</th>
                     <th>email</th>
                     <th>joined</th>
                     <th>actions</th>
@@ -459,6 +478,7 @@ async function handleDeleteSpace(spaceId: string) {
                           {u.is_admin && <span className={styles.adminChip}>admin</span>}
                         </div>
                       </td>
+                      <td><span className={styles.uidChip}>{u.short_id}</span></td>
                       <td>{u.email}</td>
                       <td>{new Date(u.created_at).toLocaleDateString()}</td>
                       <td>
@@ -474,152 +494,155 @@ async function handleDeleteSpace(spaceId: string) {
           </div>
         )}
 
-   {tab === 'reports' && (
-  <div>
-    <h1 className={styles.pageTitle}>reports</h1>
-    {reports.length === 0 ? (
-      <div className={styles.emptyState}>
-        <div className={styles.emptyIcon}>✦</div>
-        <h3 className={styles.emptyTitle}>no open reports</h3>
-        <p className={styles.emptySub}>You're all caught up!</p>
-      </div>
-    ) : (
-      <div className={styles.reportsList}>
-        {reports.map(report => (
-          <div key={report.id} className={styles.reportCard}>
-
-            <div className={styles.reportPhotoWrap}>
-              {report.photo ? (
-                report.photo.file_type?.startsWith('video/') ? (
-                  <video src={report.photo.url} className={styles.reportPhoto} muted />
-                ) : (
-                  <img src={report.photo.url} alt="" className={styles.reportPhoto} />
-                )
-              ) : (
-                <div className={styles.reportPhotoMissing}>deleted</div>
-              )}
-            </div>
-
-            <div className={styles.reportInfo}>
-              <div className={styles.reportReason}>
-                {report.reason || 'No reason given'}
+        {tab === 'reports' && (
+          <div>
+            <h1 className={styles.pageTitle}>reports</h1>
+            {reports.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>✦</div>
+                <h3 className={styles.emptyTitle}>no open reports</h3>
+                <p className={styles.emptySub}>You're all caught up!</p>
               </div>
-              <div className={styles.reportMetaRow}>
-                <span className={styles.reportMetaItem}>
-                  reported by <strong>{report.reporter_email}</strong>
-                </span>
-              </div>
-              <div className={styles.reportMetaRow}>
-                <span className={styles.reportMetaItem}>
-                  {new Date(report.created_at).toLocaleDateString('en-US', {
-                    month: 'long', day: 'numeric', year: 'numeric'
-                  })}
-                </span>
-              </div>
-              {report.space && (
-                <div className={styles.reportMetaRow}>
-                  <span className={styles.reportMetaItem}>
-                    space: <strong>{report.space.name}</strong>
-                  </span>
-                  {report.album && (
-                    <>
-                      <span className={styles.reportMetaDot}>·</span>
-                      <span className={styles.reportMetaItem}>
-                        album: <strong>{report.album.name}</strong>
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-              {report.photo && (
-                <div className={styles.reportMetaRow}>
-                  <span className={styles.reportMetaItem}>
-                    uploaded by <strong>{report.photo.uploaded_by}</strong>
-                  </span>
-                </div>
-              )}
-            </div>
+            ) : (
+              <div className={styles.reportsList}>
+                {reports.map(report => (
+                  <div key={report.id} className={styles.reportCard}>
 
-            <div className={styles.reportActions}>
-              <div className={styles.reportActionsTop}>
-                <button
-                  className={styles.btnView}
-                  onClick={() => handleResolveReport(report.id)}
-                >
-                  resolve
-                </button>
-                {report.photo && (
-                  <button
-                    className={styles.btnDelete}
-                    onClick={() => setConfirmDelete({
-                      type: 'photo',
-                      id: report.photo!.id,
-                      name: 'reported photo'
-                    })}
-                  >
-                    delete
-                  </button>
-                )}
-                <div className={styles.moreInfoWrap}>
-                  <button
-                    className={styles.moreInfoBtn}
-                    onClick={() => setReportMoreInfo(
-                      reportMoreInfo === report.id ? null : report.id
-                    )}
-                  >
-                    •••
-                  </button>
-                  {reportMoreInfo === report.id && (
-                    <div className={styles.moreInfoPopup}>
-                      {report.space && (
-                        <button
-                          className={styles.moreInfoItem}
-                          onClick={() => {
-                            setReportMoreInfo(null)
-                            router.push('/space/' + report.space!.code)
-                          }}
-                        >
-                          go to space →
-                        </button>
-                      )}
-                      {report.space && report.album && (
-                        <button
-                          className={styles.moreInfoItem}
-                          onClick={() => {
-                            setReportMoreInfo(null)
-                            router.push('/space/' + report.space!.code + '/album/' + report.album!.id)
-                          }}
-                        >
-                          go to album →
-                        </button>
-                      )}
-                      {report.photo?.uploaded_by && (
-                        <button
-                          className={styles.moreInfoItem}
-                          onClick={() => {
-                            const u = users.find(u =>
-                              u.email === report.photo?.uploaded_by ||
-                              u.display_name === report.photo?.uploaded_by
-                            )
-                            if (u) setConfirmTerminate(u)
-                            setReportMoreInfo(null)
-                          }}
-                        >
-                          terminate uploader →
-                        </button>
+                    <div className={styles.reportPhotoWrap}>
+                      {report.photo ? (
+                        report.photo.file_type?.startsWith('video/') ? (
+                          <video src={report.photo.url} className={styles.reportPhoto} muted />
+                        ) : (
+                          <img src={report.photo.url} alt="" className={styles.reportPhoto} />
+                        )
+                      ) : (
+                        <div className={styles.reportPhotoMissing}>deleted</div>
                       )}
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
 
+                    <div className={styles.reportInfo}>
+                      <div className={styles.reportReason}>
+                        {report.reason || 'No reason given'}
+                      </div>
+                      <div className={styles.reportMetaRow}>
+                        <span className={styles.reportMetaItem}>
+                          reported by <strong>{report.reporter_email}</strong>
+                          {report.reporter_uid && (
+                            <span className={styles.uidChip} style={{ marginLeft: '0.4rem' }}>{report.reporter_uid}</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className={styles.reportMetaRow}>
+                        <span className={styles.reportMetaItem}>
+                          {new Date(report.created_at).toLocaleDateString('en-US', {
+                            month: 'long', day: 'numeric', year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                      {report.space && (
+                        <div className={styles.reportMetaRow}>
+                          <span className={styles.reportMetaItem}>
+                            space: <strong>{report.space.name}</strong>
+                          </span>
+                          {report.album && (
+                            <>
+                              <span className={styles.reportMetaDot}>·</span>
+                              <span className={styles.reportMetaItem}>
+                                album: <strong>{report.album.name}</strong>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {report.photo && (
+                        <div className={styles.reportMetaRow}>
+                          <span className={styles.reportMetaItem}>
+                            uploaded by <strong>{report.photo.uploaded_by}</strong>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={styles.reportActions}>
+                      <div className={styles.reportActionsTop}>
+                        <button
+                          className={styles.btnView}
+                          onClick={() => handleResolveReport(report.id)}
+                        >
+                          resolve
+                        </button>
+                        {report.photo && (
+                          <button
+                            className={styles.btnDelete}
+                            onClick={() => setConfirmDelete({
+                              type: 'photo',
+                              id: report.photo!.id,
+                              name: 'reported photo'
+                            })}
+                          >
+                            delete
+                          </button>
+                        )}
+                        <div className={styles.moreInfoWrap}>
+                          <button
+                            className={styles.moreInfoBtn}
+                            onClick={() => setReportMoreInfo(
+                              reportMoreInfo === report.id ? null : report.id
+                            )}
+                          >
+                            •••
+                          </button>
+                          {reportMoreInfo === report.id && (
+                            <div className={styles.moreInfoPopup}>
+                              {report.space && (
+                                <button
+                                  className={styles.moreInfoItem}
+                                  onClick={() => {
+                                    setReportMoreInfo(null)
+                                    router.push('/space/' + report.space!.code)
+                                  }}
+                                >
+                                  go to space →
+                                </button>
+                              )}
+                              {report.space && report.album && (
+                                <button
+                                  className={styles.moreInfoItem}
+                                  onClick={() => {
+                                    setReportMoreInfo(null)
+                                    router.push('/space/' + report.space!.code + '/album/' + report.album!.id)
+                                  }}
+                                >
+                                  go to album →
+                                </button>
+                              )}
+                              {report.photo?.uploaded_by && (
+                                <button
+                                  className={styles.moreInfoItem}
+                                  onClick={() => {
+                                    const u = users.find(u =>
+                                      u.email === report.photo?.uploaded_by ||
+                                      u.display_name === report.photo?.uploaded_by
+                                    )
+                                    if (u) setConfirmTerminate(u)
+                                    setReportMoreInfo(null)
+                                  }}
+                                >
+                                  terminate uploader →
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
+        )}
 
       </div>
 
@@ -655,7 +678,8 @@ async function handleDeleteSpace(spaceId: string) {
             <div className={styles.warningIcon}>!</div>
             <h2 className={styles.modalTitle}>terminate account</h2>
             <p className={styles.modalSub}>
-              This will permanently delete <strong>{confirmTerminate.display_name || confirmTerminate.email}</strong>'s account, all their Spaces, and all uploaded content. This cannot be undone.
+              This will permanently delete <strong>{confirmTerminate.display_name || confirmTerminate.email}</strong>
+              {' '}<span className={styles.uidChip}>{confirmTerminate.short_id}</span>'s account, all their Spaces, and all uploaded content. This cannot be undone.
             </p>
             <div className={styles.modalBtns}>
               <button className={styles.btnOutline} onClick={() => setConfirmTerminate(null)}>cancel</button>
@@ -674,3 +698,16 @@ async function handleDeleteSpace(spaceId: string) {
     </main>
   )
 }
+// CSS addition for admin.module.css — append this class:
+// .uidChip {
+//   display: inline-block;
+//   background: #1a1a1a;
+//   color: #C8F025;
+//   border-radius: 5px;
+//   padding: 0.15rem 0.45rem;
+//   font-size: 0.7rem;
+//   font-weight: 900;
+//   letter-spacing: 0.1em;
+//   font-family: monospace;
+//   vertical-align: middle;
+// }

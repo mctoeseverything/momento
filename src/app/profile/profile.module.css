@@ -275,3 +275,16 @@
   0%, 100% { transform: translateY(0); opacity: 0.4; }
   50% { transform: translateY(-8px); opacity: 1; }
 }
+
+/* User ID badge — shown on profile page */
+.uidBadge {
+  display: inline-block;
+  background: #111111;
+  color: #C8F025;
+  border-radius: 6px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  font-family: monospace;
+}
